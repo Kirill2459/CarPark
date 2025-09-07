@@ -1,6 +1,8 @@
 ﻿using Model.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +13,9 @@ namespace Model
     {
         public static List<Car> _cars = new List<Car>();
         public static List<Owner> _owners = new List<Owner>();
+
+        //==============JSON=================
+        
 
         // Создаем интерфейс для связки представления с методами в логике
         public interface ICarService
