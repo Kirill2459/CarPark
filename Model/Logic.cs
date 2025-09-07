@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +17,67 @@ namespace Model
         public static List<Owner> _owners = new List<Owner>();
 
         //==============JSON=================
-        
+        public static List<T> ReadAll<T>()
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, "DataFiles/"+nameof(T)+".json");
+            string jsonString = File.ReadAllText(path);
+            List<T> entities = JsonConvert.DeserializeObject<List<T>>(jsonString);
+            return entities;
+        }
+
+        public static T Read<T>(int id)
+        {
+            List<T> entities = ReadAll<T>();
+
+            var propertyInfo = typeof(T).GetProperty("Id");
+            T entity = entities.FirstOrDefault(item =>
+            {
+                var Id = propertyInfo.GetValue(item);
+                return Id != null && Id.Equals(id);
+            });
+
+            return entity;
+        }
+
+        public static void Add<T>(T entity)
+        {
+            List<T> entities = ReadAll<T>();
+            entities.Add(entity);
+            string pathOut = Path.Combine(Environment.CurrentDirectory, "DataFiles/"+nameof(T)+".json");
+            string jsonOut = JsonConvert.SerializeObject(entities);
+            File.WriteAllText(pathOut, jsonOut);
+        }
+
+        public static void Delete<T>(int id)
+        {
+            List<T> entities = ReadAll<T>();
+
+            var propertyInfo = typeof(T).GetProperty("Id");
+            T entity = entities.FirstOrDefault(item =>
+            {
+                var Id = propertyInfo.GetValue(item);
+                return Id != null && Id.Equals(id);
+            });
+
+            if (entity != null)
+            {
+                entities.Remove(entity);
+                string pathOut = Path.Combine(Environment.CurrentDirectory, "DataFiles/" + nameof(T) + ".json");
+                string jsonOut = JsonConvert.SerializeObject(entities);
+                File.WriteAllText(pathOut, jsonOut);
+            }
+        }
+
+        public static void Update<T>(T updateEntity)
+        {
+            var propertyInfo = typeof(T).GetProperty("Id");
+            int Id = int.Parse((string)propertyInfo.GetValue(updateEntity));
+
+            Delete<T>(Id);
+            Add<T>(updateEntity);
+        }
+
+
 
         // Создаем интерфейс для связки представления с методами в логике
         public interface ICarService
