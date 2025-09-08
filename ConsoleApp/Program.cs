@@ -10,14 +10,8 @@ namespace ConsoleApp
 {
     internal class Program
     {
-
-        private static Logic.ICarService _carService;
-        private static Logic.IOwnerService _ownerService;
         static void Main(string[] args)
         {
-            _carService = new Logic.CarService();
-            _ownerService = new Logic.OwnerService();
-
             while (true)
             {
                 Console.Clear();
@@ -60,6 +54,8 @@ namespace ConsoleApp
                 Console.WriteLine("3. Изменить машину");
                 Console.WriteLine("4. Найти старые машины");
                 Console.WriteLine("5. Удалить машину");
+                Console.WriteLine("6. Узнать стоимость автопарка.");
+                Console.WriteLine("7. Отсортировать машины по бренду.");
                 Console.WriteLine("0. Назад в главное меню");
                 Console.Write("Выберите действие: ");
 
@@ -68,16 +64,16 @@ namespace ConsoleApp
                 switch (choice)
                 {
                     case "1":
-                        var cars = _carService.GetAllCars();
+                        List<Car> cars = Logic.ReadAll<Car>();
                         if (cars.Count == 0)
                         {
                             Console.WriteLine("Машин нет");
                         }
                         else
                         {
-                            foreach (var car in cars)
+                            foreach (Car car in cars)
                             {
-                                Console.WriteLine($"{car.Id}){car.Brand},{car.Model} {car.Year} года, - {car.Price} руб");
+                                Console.WriteLine($"Id: {car.Id}. {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
                             }
                         }
                         break;
@@ -85,16 +81,17 @@ namespace ConsoleApp
                         try
                         {
                             Console.Write("Марка: ");
-                            var brand = Console.ReadLine() ?? "";
+                            string brand = Console.ReadLine() ?? "";
                             Console.Write("Модель: ");
-                            var model = Console.ReadLine() ?? "";
+                            string model = Console.ReadLine() ?? "";
                             Console.Write("Год: ");
-                            var year = int.Parse(Console.ReadLine() ?? "0");
+                            int year = int.Parse(Console.ReadLine() ?? "0");
                             Console.Write("Цена(руб): ");
-                            var price = decimal.Parse(Console.ReadLine() ?? "0");
+                            decimal price = decimal.Parse(Console.ReadLine() ?? "0");
 
-                            var car = _carService.CreateCar(brand, model, year, price);
-                            Console.WriteLine($"Добавлена: {car.Brand},{car.Model} {car.Year} года, - {car.Price} руб");
+                            Car car = Logic.CreateCar(brand, model, year, price);
+                            Logic.Add<Car>(car);
+                            Console.WriteLine($"Добавлена: {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
                         }
                         catch (Exception ex)
                         {
@@ -102,13 +99,101 @@ namespace ConsoleApp
                         }
                         break;
                     case "3":
-                        
+                        try
+                        {
+                            Console.Write("Введите Id машины которую вы хотели бы изменить: ");
+                            int id = int.Parse(Console.ReadLine() ?? "0");
+
+                            Car car = Logic.Read<Car>(id);
+
+                            if (car != null)
+                            {
+                                Console.WriteLine("Введите новые свойства для машины: ");
+                                Console.Write("Марка: ");
+                                string brand = Console.ReadLine() ?? "";
+                                Console.Write("Модель: ");
+                                string model = Console.ReadLine() ?? "";
+                                Console.Write("Год: ");
+                                int year = int.Parse(Console.ReadLine() ?? "0");
+                                Console.Write("Цена(руб): ");
+                                decimal price = decimal.Parse(Console.ReadLine() ?? "0");
+
+                                Car newCar = Logic.CreateCar(brand, model, year, price);
+                                newCar.Id = id;
+                                Logic.Update<Car>(newCar);
+                                Console.WriteLine($"Автомобиль изменен: {newCar.Brand} {newCar.Model}, {newCar.Year} года, - {newCar.Price} руб");
+                            }
+                            else
+                            {
+                                Console.Write("В автопарке нет автомобиля с таким Id.");
+
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Ошибка: {ex.Message}");
+                        }
                         break;
                     case "4":
-                        
+                        List<Car> vintageCars= Logic.GetVintageCars();
+                        Console.WriteLine("Винтажные машины:");
+                        if (vintageCars.Count == 0)
+                        {
+                            Console.WriteLine("Машин нет");
+                        }
+                        else
+                        {
+                            foreach (Car car in vintageCars)
+                            {
+                                Console.WriteLine($"Id: {car.Id}. {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
+                            }
+                        }
                         break;
                     case "5":
-                        
+                        try
+                        {
+                            Console.Write("Введите Id машины которую вы хотели бы удалить: ");
+                            int id = int.Parse(Console.ReadLine() ?? "0");
+
+                            Car car = Logic.Read<Car>(id);
+
+                            if (car != null)
+                            {
+                                Logic.Delete<Car>(id);
+                                Console.WriteLine($"Автомобиль удален.");
+                            }
+                            else
+                            {
+                                Console.Write("В автопарке нет автомобиля с таким Id.");
+
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Ошибка: {ex.Message}");
+                        }
+                        break;
+                    case "6":
+                        decimal costCarPark = Logic.AllPrice();
+                        Console.WriteLine($"Стоимость всего автопарка составляет {costCarPark} руб.");
+                        break;
+                    case "7":
+                        Console.Write("Введите автомобильный бренд: ");
+                        string userBrand = Console.ReadLine();
+
+                        List<Car> carsBrand = Logic.GetCarsByBrand(userBrand);
+
+                        if (carsBrand.Count() == 0)
+                        {
+                            Console.Write("В автопарке нет машин с таким брендом.");
+                        }
+                        else
+                        {
+                            foreach (Car car in carsBrand)
+                            {
+                                Console.WriteLine($"Id: {car.Id}. {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
+                            }
+                        }
                         break;
                     case "0":
                         return; // Возврат в главное меню
@@ -121,6 +206,11 @@ namespace ConsoleApp
                 Console.ReadKey();
             }
         }
+
+
+
+
+
 
         static void OwnerMenu()
         {

@@ -13,13 +13,11 @@ namespace Model
 {
     public class Logic
     {
-        public static List<Car> _cars = new List<Car>();
-        public static List<Owner> _owners = new List<Owner>();
 
         //==============JSON=================
         public static List<T> ReadAll<T>()
         {
-            string path = Path.Combine(Environment.CurrentDirectory, "DataFiles/"+nameof(T)+".json");
+            string path = Path.Combine(Environment.CurrentDirectory, "DataFiles/" + typeof(T).Name + ".json");
             string jsonString = File.ReadAllText(path);
             List<T> entities = JsonConvert.DeserializeObject<List<T>>(jsonString);
             return entities;
@@ -43,7 +41,7 @@ namespace Model
         {
             List<T> entities = ReadAll<T>();
             entities.Add(entity);
-            string pathOut = Path.Combine(Environment.CurrentDirectory, "DataFiles/"+nameof(T)+".json");
+            string pathOut = Path.Combine(Environment.CurrentDirectory, "DataFiles/" + typeof(T).Name + ".json");
             string jsonOut = JsonConvert.SerializeObject(entities);
             File.WriteAllText(pathOut, jsonOut);
         }
@@ -62,7 +60,7 @@ namespace Model
             if (entity != null)
             {
                 entities.Remove(entity);
-                string pathOut = Path.Combine(Environment.CurrentDirectory, "DataFiles/" + nameof(T) + ".json");
+                string pathOut = Path.Combine(Environment.CurrentDirectory, "DataFiles/" + typeof(T).Name + ".json");
                 string jsonOut = JsonConvert.SerializeObject(entities);
                 File.WriteAllText(pathOut, jsonOut);
             }
@@ -76,102 +74,32 @@ namespace Model
             Delete<T>(Id);
             Add<T>(updateEntity);
         }
+        //===================================
 
 
-
-        // Создаем интерфейс для связки представления с методами в логике
-        public interface ICarService
+        //генератор Id
+        public static int GeneratorId()
         {
-            Car CreateCar(string brand, string model, int year, decimal price);
-            List<Car> GetAllCars();
-            bool DeleteCar(int id);
-            List<Car> GetVintageCars();
-            Car ChangeCar(int id, string new_brand, string new_model, int new_year, decimal new_price);
-            List<Car> GetCarsByBrand(string brand);
-            decimal AllPrice(string brand);
+            int id = int.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "DataFiles/id.txt")));
+            ++id;
+            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "DataFiles/id.txt"), id.ToString());
+            return id;
         }
 
 
-        public class CarService : ICarService
+
+        // Создание машины
+        public static Car CreateCar(string brand, string model, int year, decimal price)
         {
-            private int _nextIdCar = 1;
-
-            // Создание машины
-            public Car CreateCar(string brand, string model, int year, decimal price)
+            var car = new Car
             {
-                var car = new Car
-                {
-                    Id = _nextIdCar++,
-                    Brand = brand,
-                    Model = model,
-                    Year = year,
-                    Price = price
-                };
-
-                _cars.Add(car);
-                return car;
-            }
-
-            // Удаление машины по ID
-            public bool DeleteCar(int id)
-            {
-                var car = _cars.FirstOrDefault(c => c.Id == id);
-                if (car != null)
-                {
-                    _cars.Remove(car);
-                    return true;
-                }
-                return false;
-            }
-
-            // Чтение всех машин
-            public List<Car> GetAllCars()
-            {
-                return _cars;
-            }
-
-            // Чтение только винтажных машин
-            public List<Car> GetVintageCars()
-            {
-                return _cars
-                    .Where(car => car.Year <= 1990)
-                    .ToList();
-            }
-
-            // Изменение машины по ID
-            public Car ChangeCar(int id, string new_brand, string new_model, int new_year, decimal new_price)
-            {
-                var car = _cars.FirstOrDefault(c => c.Id == id);
-
-                if (car == null)
-                    return null; //("Машина не найдена")
-
-                car.Brand = new_brand;
-                car.Model = new_model;
-                car.Year = new_year;
-                car.Price = new_price;
-
-                return car;
-            }
-
-            //_________БИЗНЕС ФУНКЦИИ___________
-
-
-            // Сортировка по бренду
-            public List<Car> GetCarsByBrand(string brand)
-            {
-                return _cars
-                    .Where(car => car.Brand == brand)
-                    .ToList();
-            }
-
-            // Общая стоимость автопарка
-            public decimal AllPrice(string brand)
-            {
-                return _cars
-                    .Sum(c => c.Price);
-            }
-
+                Id = GeneratorId(),
+                Brand = brand,
+                Model = model,
+                Year = year,
+                Price = price
+            };
+            return car;
         }
 
 
@@ -180,126 +108,108 @@ namespace Model
 
 
 
+        //_________БИЗНЕС ФУНКЦИИ___________
 
-
-
-        // Создаем интерфейс для связки представления с методами в логике
-        public interface IOwnerService
+        // Чтение только винтажных машин
+        public static List<Car> GetVintageCars()
         {
-            Owner CreateOwner(string name, int year, int experienceYear);
-            bool DeleteOwner(int id);
-            List<Owner> GetAllOwners();
-            Owner AddCarOwner(int idOwner, int idCar);
-            List<Car> ShowCarsOwner(int idOwner);
-            Owner DeleteCarOwner(int idCar, int idOwner);
-
+            List<Car> cars = ReadAll<Car>();
+            return cars.Where(car => car.Year <= 1990).ToList();
         }
 
-        public class OwnerService : IOwnerService
+        // Сортировка по бренду
+        public static List<Car> GetCarsByBrand(string brand)
         {
-            private int _nextIdOwner = 1;
-
-            // Создание владельца
-            public Owner CreateOwner(string name, int year, int experienceYear)
-            {
-                var owner = new Owner
-                {
-                    Id = _nextIdOwner++,
-                    Name = name,
-                    Year = year,
-                    ExperienceYear = experienceYear,
-                };
-
-                _owners.Add(owner);
-                return owner;
-            }
-
-            // Удаление владельца по ID
-            public bool DeleteOwner(int id)
-            {
-                var owner = _owners.FirstOrDefault(c => c.Id == id);
-                if (owner != null)
-                {
-                    _owners.Remove(owner);
-                    return true;
-                }
-                return false;
-            }
-
-            // Чтение всех владельцев
-            public List<Owner> GetAllOwners()
-            {
-                return _owners;
-            }
-
-            // Добавление машины владельцу
-            public Owner AddCarOwner(int idOwner, int idCar)
-            {
-                var owner = _owners.FirstOrDefault(c => c.Id == idOwner);
-                if (owner == null)
-                    throw new ArgumentException($"Владелец с ID {idOwner} не найден");
-
-                var car = _cars.FirstOrDefault(c => c.Id == idCar);
-                if (car == null)
-                    throw new ArgumentException($"Машина с ID {idCar} не найдена");
-
-                if (!car.NoOwner)
-                    throw new InvalidOperationException($"Машина с ID {idCar} уже занята");
-
-                // Проверяем, нет ли уже такой машины у владельца
-                if (owner.CarsOwner.Any(c => c.Id == idCar))
-                    throw new InvalidOperationException($"Машина с ID {idCar} уже принадлежит этому владельцу");
-
-                // Добавляем машину и обновляем флаг
-                owner.CarsOwner.Add(car);
-                car.NoOwner = false;
-
-                return owner;
-            }
-
-            // Вывод машин владельца 
-            public List<Car> ShowCarsOwner(int idOwner)
-            {
-                var owner = _owners.FirstOrDefault(c => c.Id == idOwner);
-                if (owner == null)
-                    throw new ArgumentException($"Владелец с ID {idOwner} не найден");
-
-                return owner.CarsOwner;
-            }
-
-            // Удаление машины у владельца
-            public Owner DeleteCarOwner(int idCar, int idOwner)
-            {
-                var owner = _owners.FirstOrDefault(c => c.Id == idOwner);
-                if (owner == null)
-                    throw new ArgumentException($"Владелец с ID {idOwner} не найден");
-
-                var car = _cars.FirstOrDefault(c => c.Id == idCar);
-                if (car == null)
-                    throw new ArgumentException($"Машина с ID {idCar} не найдена");
-
-                if (car == null)
-                    throw new ArgumentException($"Машина с ID {idCar} не найдена");
-
-                if (car.NoOwner)
-                    throw new InvalidOperationException($"Машина с ID {idCar} свободна");
-
-                owner.CarsOwner.Remove(car);
-                car.NoOwner = true;
-
-                return owner;
-            }
-
+            List<Car> cars = ReadAll<Car>();
+            return cars.Where(car => car.Brand == brand).ToList();
         }
 
-        
+        // Общая стоимость автопарка
+        public static decimal AllPrice()
+        {
+            List<Car> cars = ReadAll<Car>();
+            return cars.Sum(c => c.Price);
+        }
 
 
 
 
 
 
+        //private int _nextIdOwner = 1;
+
+        //// Создание владельца
+        //public Owner CreateOwner(string name, int year, int experienceYear)
+        //{
+        //    var owner = new Owner
+        //    {
+        //        Id = _nextIdOwner++,
+        //        Name = name,
+        //        Year = year,
+        //        ExperienceYear = experienceYear,
+        //    };
+
+        //    _owners.Add(owner);
+        //    return owner;
+        //}
 
 
+        //// Добавление машины владельцу
+        //public Owner AddCarOwner(int idOwner, int idCar)
+        //{
+        //    var owner = _owners.FirstOrDefault(c => c.Id == idOwner);
+        //    if (owner == null)
+        //        throw new ArgumentException($"Владелец с ID {idOwner} не найден");
+
+        //    var car = _cars.FirstOrDefault(c => c.Id == idCar);
+        //    if (car == null)
+        //        throw new ArgumentException($"Машина с ID {idCar} не найдена");
+
+        //    if (!car.NoOwner)
+        //        throw new InvalidOperationException($"Машина с ID {idCar} уже занята");
+
+        //    // Проверяем, нет ли уже такой машины у владельца
+        //    if (owner.CarsOwner.Any(c => c.Id == idCar))
+        //        throw new InvalidOperationException($"Машина с ID {idCar} уже принадлежит этому владельцу");
+
+        //    // Добавляем машину и обновляем флаг
+        //    owner.CarsOwner.Add(car);
+        //    car.NoOwner = false;
+
+        //    return owner;
+        //}
+
+        //// Вывод машин владельца 
+        //public List<Car> ShowCarsOwner(int idOwner)
+        //{
+        //    var owner = _owners.FirstOrDefault(c => c.Id == idOwner);
+        //    if (owner == null)
+        //        throw new ArgumentException($"Владелец с ID {idOwner} не найден");
+
+        //    return owner.CarsOwner;
+        //}
+
+        //// Удаление машины у владельца
+        //public Owner DeleteCarOwner(int idCar, int idOwner)
+        //{
+        //    var owner = _owners.FirstOrDefault(c => c.Id == idOwner);
+        //    if (owner == null)
+        //        throw new ArgumentException($"Владелец с ID {idOwner} не найден");
+
+        //    var car = _cars.FirstOrDefault(c => c.Id == idCar);
+        //    if (car == null)
+        //        throw new ArgumentException($"Машина с ID {idCar} не найдена");
+
+        //    if (car == null)
+        //        throw new ArgumentException($"Машина с ID {idCar} не найдена");
+
+        //    if (car.NoOwner)
+        //        throw new InvalidOperationException($"Машина с ID {idCar} свободна");
+
+        //    owner.CarsOwner.Remove(car);
+        //    car.NoOwner = true;
+
+        //    return owner;
+        //}
     }
 }
