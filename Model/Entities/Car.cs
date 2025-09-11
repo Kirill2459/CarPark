@@ -13,6 +13,7 @@ namespace Model.Entities
         public string Model { get; set; }
         public int Year { get; set; }
         public decimal Price { get; set; }
-        public bool NoOwner { get; set; } = true;
+        public int? IdOwner { get; set; }
+
     }
 }

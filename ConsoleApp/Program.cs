@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.AccessControl;
 
 namespace ConsoleApp
 {
@@ -58,8 +59,10 @@ namespace ConsoleApp
                 Console.WriteLine("7. Отсортировать машины по бренду.");
                 Console.WriteLine("0. Назад в главное меню");
                 Console.Write("Выберите действие: ");
+                
 
                 var choice = Console.ReadLine();
+                Console.WriteLine("");
 
                 switch (choice)
                 {
@@ -81,16 +84,16 @@ namespace ConsoleApp
                         try
                         {
                             Console.Write("Марка: ");
-                            string brand = Console.ReadLine() ?? "";
+                            string brand = Console.ReadLine();
                             Console.Write("Модель: ");
-                            string model = Console.ReadLine() ?? "";
+                            string model = Console.ReadLine();
                             Console.Write("Год: ");
-                            int year = int.Parse(Console.ReadLine() ?? "0");
+                            int year = int.Parse(Console.ReadLine());
                             Console.Write("Цена(руб): ");
-                            decimal price = decimal.Parse(Console.ReadLine() ?? "0");
+                            decimal price = decimal.Parse(Console.ReadLine());
 
                             Car car = Logic.CreateCar(brand, model, year, price);
-                            Logic.Add<Car>(car);
+                            Logic.Add(car);
                             Console.WriteLine($"Добавлена: {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
                         }
                         catch (Exception ex)
@@ -110,17 +113,17 @@ namespace ConsoleApp
                             {
                                 Console.WriteLine("Введите новые свойства для машины: ");
                                 Console.Write("Марка: ");
-                                string brand = Console.ReadLine() ?? "";
+                                string brand = Console.ReadLine();
                                 Console.Write("Модель: ");
-                                string model = Console.ReadLine() ?? "";
+                                string model = Console.ReadLine();
                                 Console.Write("Год: ");
-                                int year = int.Parse(Console.ReadLine() ?? "0");
+                                int year = int.Parse(Console.ReadLine());
                                 Console.Write("Цена(руб): ");
-                                decimal price = decimal.Parse(Console.ReadLine() ?? "0");
+                                decimal price = decimal.Parse(Console.ReadLine());
 
                                 Car newCar = Logic.CreateCar(brand, model, year, price);
                                 newCar.Id = id;
-                                Logic.Update<Car>(newCar);
+                                Logic.Update(newCar);
                                 Console.WriteLine($"Автомобиль изменен: {newCar.Brand} {newCar.Model}, {newCar.Year} года, - {newCar.Price} руб");
                             }
                             else
@@ -155,11 +158,24 @@ namespace ConsoleApp
                             Console.Write("Введите Id машины которую вы хотели бы удалить: ");
                             int id = int.Parse(Console.ReadLine() ?? "0");
 
+                            List<Owner> owners = Logic.ReadAll<Owner>();
                             Car car = Logic.Read<Car>(id);
 
                             if (car != null)
                             {
                                 Logic.Delete<Car>(id);
+                                foreach (Owner owner in owners)
+                                {
+                                    // Проверяем содержит ли владелец эту машину
+                                    if (owner.IdCarsOwner.Contains(id))
+                                    {
+                                        // Удаляем ID машины из списка владельца
+                                        owner.IdCarsOwner.Remove(id);
+                                        Logic.Update(owner); // Обновляем владельца в json
+
+                                        Console.WriteLine($"Машина ID:{id} удалена у владельца {owner.Name}");
+                                    }
+                                }
                                 Console.WriteLine($"Автомобиль удален.");
                             }
                             else
@@ -178,7 +194,7 @@ namespace ConsoleApp
                         Console.WriteLine($"Стоимость всего автопарка составляет {costCarPark} руб.");
                         break;
                     case "7":
-                        Console.Write("Введите автомобильный бренд: ");
+                        Console.Write("Введите марку автомобиля: ");
                         string userBrand = Console.ReadLine();
 
                         List<Car> carsBrand = Logic.GetCarsByBrand(userBrand);
@@ -227,23 +243,232 @@ namespace ConsoleApp
                 Console.Write("Выберите действие: ");
 
                 var choice = Console.ReadLine();
+                Console.WriteLine("");
 
                 switch (choice)
                 {
                     case "1":
-                        
+                        List<Owner> owners = Logic.ReadAll<Owner>();
+                        if (owners.Count == 0)
+                        {
+                            Console.WriteLine("Владельцев нет");
+                        }
+                        else
+                        {
+                            foreach (Owner owner in owners)
+                            {
+                                Console.WriteLine($"Id: {owner.Id}. {owner.Name}, возраст:{owner.Year}, стаж:{owner.ExperienceYear}");
+                            }
+                        }
                         break;
                     case "2":
-                        
+                        try
+                        {
+                            Console.Write("Имя: ");
+                            string name;
+
+                            while (string.IsNullOrWhiteSpace(name = Console.ReadLine()) || name.Any(char.IsDigit))
+                            {
+                                Console.Write("Имя не может быть пустым или содержать цифры. Введите имя: ");
+                            }
+
+                            Console.Write("Возраст: ");
+                            int year;
+                            while (true)
+                            {
+                                if (int.TryParse(Console.ReadLine(), out year))
+                                {
+                                    if (year > 105)
+                                    {
+                                        Console.Write("Возраст не может быть таким большим. Повторите ввод: ");
+                                    }
+                                    else
+                                    {
+                                        break; // Ввод корректен
+                                    }
+                                }
+                                else
+                                {
+                                    Console.Write("Некорректный ввод. Введите число для возраста: ");
+                                }
+                            }
+                            
+
+                            Console.Write("Стаж вождения: ");
+                            int expYear;
+                            while (true)
+                            {
+                                if (int.TryParse(Console.ReadLine(), out expYear))
+                                {
+                                    if (expYear < 0)
+                                    {
+                                        Console.Write("Стаж не может быть отрицательным. Повторите ввод: ");
+                                    }
+                                    else if (expYear > 80)
+                                    {
+                                        Console.Write("Стаж не может быть больше 80 лет. Повторите ввод: ");
+                                    }
+                                    else if (expYear > year - 18) // Проверка логики
+                                    {
+                                        Console.Write($"Стаж не может быть больше чем возраст минус 18 лет ({year - 18}). Повторите ввод: ");
+                                    }
+                                    else
+                                    {
+                                        break; // Ввод корректен
+                                    }
+                                }
+                                else
+                                {
+                                    Console.Write("Некорректный ввод. Введите число для стажа: ");
+                                }
+                            }
+
+                            Owner owner = Logic.CreateOwner(name, year, expYear);
+                            Logic.Add(owner);
+                            Console.WriteLine($"Добавлен: {owner.Id}. {owner.Name}, возраст:{owner.Year}, стаж:{owner.ExperienceYear}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Ошибка: {ex.Message}");
+                        }
+
                         break;
                     case "3":
-                        
+                        try
+                        { 
+                            Console.Write("Введите номер ID владельца: ");
+                            int ownerID = int.Parse(Console.ReadLine());
+
+                            Owner owner = Logic.Read<Owner>(ownerID);
+
+                            if (owner != null)
+                            {
+                                Console.WriteLine($"Вы выбрали владельца: {owner.Name}.");
+
+                                Console.WriteLine("Список свободных машин:");
+                                List<Car> cars = Logic.ReadAll<Car>();
+                                List<Car> freeCars = cars.Where(car => car.IdOwner == null).ToList();
+
+                                if (freeCars.Count != 0)
+                                {
+                                    foreach (Car freeCar in freeCars)
+                                    {
+                                        Console.WriteLine($"Id: {freeCar.Id}. {freeCar.Brand} {freeCar.Model}, {freeCar.Year} года, - {freeCar.Price} руб");
+                                    }
+
+                                    Console.Write("Введите ID машины, которую хотите добавить: ");
+                                    int carID = int.Parse(Console.ReadLine());
+
+                                    bool carFound = false; // Флаг для отслеживания найденной машины
+
+                                    foreach (Car freeCar in freeCars)
+                                    {
+                                        if(freeCar.Id == carID)
+                                        {
+                                            owner.IdCarsOwner.Add(carID); // добавляем id машины владельцу
+                                            Logic.Update(owner);
+                                            freeCar.IdOwner = ownerID; // добавляем id владельца машине
+                                            Logic.Update(freeCar);
+
+
+                                            Console.WriteLine($"Успешно! Машина {freeCar.Model} добавлена владельцу {owner.Name}");
+                                            carFound = true;
+                                            break;
+
+                                        }                                                                                                                              
+                                    }
+                                    if (!carFound)
+                                    {
+                                        Console.WriteLine("Этой машины нет или она занята");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Свободных машин нет");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Владелей с таким Id не зарегистрирован.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Ошибка: {ex.Message}");
+                        }
                         break;
                     case "4":
-                        
+                        try
+                        {
+                            Console.Write("Введите номер ID владельца: ");
+                            int ownerID = int.Parse(Console.ReadLine());
+
+                            Owner owner = Logic.Read<Owner>(ownerID);
+                            List<Car> cars = Logic.ReadAll<Car>();
+
+                            bool carFound = false;
+
+                            if (owner != null)
+                            {
+                                Console.WriteLine($"Владельцу: {owner.Name} принадлежат машины:");
+                                foreach (Car car in cars)
+                                {
+                                    if (car.IdOwner == ownerID)
+                                    {
+                                        Console.WriteLine($"Id: {car.Id}. {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
+                                        carFound = true;                                       
+                                    }
+                                }
+                                if (!carFound)
+                                {
+                                    Console.WriteLine("У этого владельца нет машин.");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Владелей с таким Id не зарегистрирован.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Ошибка: {ex.Message}");
+                        }
+
                         break;
                     case "5":
-                        
+                        try
+                        {
+                            Console.Write("Введите Id владельца, которого вы хотели бы удалить: ");
+                            int idOwner = int.Parse(Console.ReadLine() ?? "0");
+
+                            Owner owner = Logic.Read<Owner>(idOwner);
+                            List<Car> cars = Logic.ReadAll<Car>();
+
+                            if (owner != null)
+                            {
+                                Logic.Delete<Owner>(idOwner); // удаление владельца
+
+                                foreach (Car car in cars)
+                                {
+                                    if (car.IdOwner == idOwner)
+                                    {
+                                        car.IdOwner = null; // делаем машину владельца свободной
+                                        Logic.Update(car); // сохраняем изменения в json
+                                    }
+                                }
+                                Console.WriteLine($"Владелец удален.");
+                            }
+                            else
+                            {
+                                Console.Write("Нет владельца с таким Id.");
+
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Ошибка: {ex.Message}");
+                        }
+
                         break;
                     case "0":
                         return; // Возврат в главное меню

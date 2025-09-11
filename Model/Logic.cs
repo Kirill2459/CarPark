@@ -76,10 +76,14 @@ namespace Model
         public static void Update<T>(T updateEntity)
         {
             var propertyInfo = typeof(T).GetProperty("Id");
-            int Id = int.Parse((string)propertyInfo.GetValue(updateEntity));
+            if (propertyInfo == null)
+                throw new ArgumentException("Класс должен иметь свойство Id");
 
-            Delete<T>(Id);
-            Add<T>(updateEntity);
+            // Правильное получение значения
+            int id = (int)propertyInfo.GetValue(updateEntity);
+
+            Delete<T>(id);
+            Add(updateEntity);
         }
         //===================================
 
@@ -143,22 +147,20 @@ namespace Model
 
 
 
-        //private int _nextIdOwner = 1;
+        
 
-        //// Создание владельца
-        //public Owner CreateOwner(string name, int year, int experienceYear)
-        //{
-        //    var owner = new Owner
-        //    {
-        //        Id = _nextIdOwner++,
-        //        Name = name,
-        //        Year = year,
-        //        ExperienceYear = experienceYear,
-        //    };
-
-        //    _owners.Add(owner);
-        //    return owner;
-        //}
+        // Создание владельца
+        public static Owner CreateOwner(string name, int year, int experienceYear)
+        {
+            var owner = new Owner
+            {
+                Id = GeneratorId(),
+                Name = name,
+                Year = year,
+                ExperienceYear = experienceYear
+            };
+            return owner;
+        }
 
 
         //// Добавление машины владельцу

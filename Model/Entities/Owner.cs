@@ -12,6 +12,6 @@ namespace Model.Entities
         public string Name { get; set; }
         public int Year { get; set; }
         public int ExperienceYear { get; set; }
-        public List<Car> CarsOwner { get; set; } = new List<Car>();
+        public List<int> IdCarsOwner { get; set; } = new List<int>();
     }
 }
