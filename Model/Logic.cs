@@ -13,11 +13,18 @@ namespace Model
 {
     public class Logic
     {
+        // Поднимаемся на 3 уровня вверх от исполняемого файла
+        static string basePath = Path.GetFullPath(Path.Combine(
+            Environment.CurrentDirectory,
+            @"..\..\..\DataFiles"));
+
 
         //==============JSON=================
         public static List<T> ReadAll<T>()
         {
-            string path = Path.Combine(Environment.CurrentDirectory, "DataFiles/" + typeof(T).Name + ".json");
+            
+
+            string path = Path.Combine(basePath, typeof(T).Name + ".json");
             string jsonString = File.ReadAllText(path);
             List<T> entities = JsonConvert.DeserializeObject<List<T>>(jsonString);
             return entities;
@@ -41,7 +48,7 @@ namespace Model
         {
             List<T> entities = ReadAll<T>();
             entities.Add(entity);
-            string pathOut = Path.Combine(Environment.CurrentDirectory, "DataFiles/" + typeof(T).Name + ".json");
+            string pathOut = Path.Combine(basePath, typeof(T).Name + ".json");
             string jsonOut = JsonConvert.SerializeObject(entities);
             File.WriteAllText(pathOut, jsonOut);
         }
@@ -60,7 +67,7 @@ namespace Model
             if (entity != null)
             {
                 entities.Remove(entity);
-                string pathOut = Path.Combine(Environment.CurrentDirectory, "DataFiles/" + typeof(T).Name + ".json");
+                string pathOut = Path.Combine(basePath, typeof(T).Name + ".json");
                 string jsonOut = JsonConvert.SerializeObject(entities);
                 File.WriteAllText(pathOut, jsonOut);
             }
@@ -80,9 +87,9 @@ namespace Model
         //генератор Id
         public static int GeneratorId()
         {
-            int id = int.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "DataFiles/id.txt")));
+            int id = int.Parse(File.ReadAllText(Path.Combine(basePath, "id.txt")));
             ++id;
-            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "DataFiles/id.txt"), id.ToString());
+            File.WriteAllText(Path.Combine(basePath, "id.txt"), id.ToString());
             return id;
         }
 
