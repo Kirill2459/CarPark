@@ -9,6 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp", "WindowsF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{5B111222-D7E1-4A3D-AEB4-D14B6047F334}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFiles", "DataFiles", "{BA8D25C1-7F42-4DE0-A471-1A52F0A8736D}"
+	ProjectSection(SolutionItems) = preProject
+		DataFiles\Car.json = DataFiles\Car.json
+		DataFiles\id.txt = DataFiles\id.txt
+		DataFiles\Owner.json = DataFiles\Owner.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
