@@ -19,7 +19,7 @@ namespace WindowsFormsApp
         public List<Car> carsOwnedByOwners { get; set; } = new List<Car>(); //машины принадлежащие владельцам
         public List<Car> carsFree { get; set; } = new List<Car>(); //свободные машины
 
-
+        public int idForUpdateCar { get; set; } //Id который будет передаваться в форму UpdateCarForm
 
 
         public Form1()
@@ -239,7 +239,29 @@ namespace WindowsFormsApp
         //обновить информацию об автомобиле
         private void button5_Click(object sender, EventArgs e)
         {
-            //....
+            try
+            {
+                idForUpdateCar = int.Parse(textBox3.Text);
+
+                Car car = Logic.Read<Car>(idForUpdateCar);
+
+                if (car != null)
+                {
+                    UpdateCarForm updateCarForm = new UpdateCarForm(this);
+                    updateCarForm.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("В автопарке нет автомобиля с таким Id.");
+                }
+            }
+            catch
+            {
+                MessageBox.Show($"Ошибка");
+            }
+
+            cars = Logic.ReadAll<Car>();
+            dataGridView_Cars.DataSource = cars;
         }
 
         //добавить автомобиль в автопарк
