@@ -277,7 +277,11 @@ namespace WindowsFormsApp
         //добавить владельца
         private void button8_Click(object sender, EventArgs e)
         {
-            //...
+            AddOwnerForm addOwnerForm = new AddOwnerForm();
+            addOwnerForm.ShowDialog();
+
+            owners = Logic.ReadAll<Owner>();
+            dataGridView_Owners.DataSource = owners;
         }
     }
 }

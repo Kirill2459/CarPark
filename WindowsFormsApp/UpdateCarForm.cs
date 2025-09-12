@@ -44,10 +44,18 @@ namespace WindowsFormsApp
                 int year = int.Parse(textBox3.Text);
                 decimal price = decimal.Parse(textBox4.Text);
 
-                Car newCar = Logic.CreateCar(brand, model, year, price);
-                newCar.Id = form1.idForUpdateCar;
-                Logic.Update(newCar);
-                MessageBox.Show($"Автомобиль успешно изменен: {newCar.Brand} {newCar.Model}, {newCar.Year} года, - {newCar.Price} руб");
+                if (!string.IsNullOrWhiteSpace(brand) && !string.IsNullOrWhiteSpace(model))
+                {
+                    Car newCar = Logic.CreateCar(brand, model, year, price);
+                    newCar.Id = form1.idForUpdateCar;
+                    Logic.Update(newCar);
+                    MessageBox.Show($"Автомобиль успешно изменен: {newCar.Brand} {newCar.Model}, {newCar.Year} года, - {newCar.Price} руб");
+                }
+                else
+                {
+                    MessageBox.Show($"Есть пустые поля");
+                }
+                
             }
             catch
             {
