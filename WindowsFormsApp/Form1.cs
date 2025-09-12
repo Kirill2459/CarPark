@@ -102,24 +102,6 @@ namespace WindowsFormsApp
             MessageBox.Show($"Полная стоимость автопарка составляет {allPrice} рублей.");
         }
 
-        //обновить информацию об автомобиле
-        private void button5_Click(object sender, EventArgs e)
-        {
-            //....
-        }
-
-        //добавить автомобиль в автопарк
-        private void button7_Click(object sender, EventArgs e)
-        {
-            //...
-        }
-
-        //добавить владельца
-        private void button8_Click(object sender, EventArgs e)
-        {
-            //...
-        }
-
         //удалить владельца
         private void button9_Click(object sender, EventArgs e)
         {
@@ -254,5 +236,26 @@ namespace WindowsFormsApp
             dataGridView_CarsFree.DataSource = carsFree;
         }
 
+        //обновить информацию об автомобиле
+        private void button5_Click(object sender, EventArgs e)
+        {
+            //....
+        }
+
+        //добавить автомобиль в автопарк
+        private void button7_Click(object sender, EventArgs e)
+        {
+            AddCarForm addCarForm = new AddCarForm();
+            addCarForm.ShowDialog();
+
+            cars = Logic.ReadAll<Car>();
+            dataGridView_Cars.DataSource = cars;
+        }
+
+        //добавить владельца
+        private void button8_Click(object sender, EventArgs e)
+        {
+            //...
+        }
     }
 }
