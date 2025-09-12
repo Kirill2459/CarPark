@@ -17,6 +17,7 @@ namespace WindowsFormsApp
         public List<Car> cars { get; set; } = new List<Car>();
         public List<Owner> owners { get; set; } = new List<Owner>();
         public List<Car> carsOwnedByOwners { get; set; } = new List<Car>(); //машины принадлежащие владельцам
+        public List<Car> carsFree { get; set; } = new List<Car>(); //свободные машины
 
 
 
@@ -24,8 +25,12 @@ namespace WindowsFormsApp
         public Form1()
         {
             InitializeComponent();
+
             owners = Logic.ReadAll<Owner>();
             dataGridView_Owners.DataSource = owners;
+
+            carsFree = Logic.ReadAll<Car>().Where(car => car.IdOwner == null).ToList();
+            dataGridView_CarsFree.DataSource = carsFree;
         }
 
         //показать все машины
@@ -108,5 +113,146 @@ namespace WindowsFormsApp
         {
             //...
         }
+
+        //добавить владельца
+        private void button8_Click(object sender, EventArgs e)
+        {
+            //...
+        }
+
+        //удалить владельца
+        private void button9_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int idOwner = int.Parse(textBox4.Text);
+
+                Owner owner = Logic.Read<Owner>(idOwner);
+                List<Car> cars = Logic.ReadAll<Car>();
+
+                if (owner != null)
+                {
+                    Logic.Delete<Owner>(idOwner); // удаление владельца
+
+                    foreach (Car car in cars)
+                    {
+                        if (car.IdOwner == idOwner)
+                        {
+                            car.IdOwner = null; // делаем машину владельца свободной
+                            Logic.Update(car); // сохраняем изменения в json
+                        }
+                    }
+                    MessageBox.Show($"Владелец удален.");
+                }
+                else
+                {
+                    MessageBox.Show("Нет владельца с таким Id.");
+                }
+            }
+            catch
+            {
+                MessageBox.Show($"Ошибка");
+            }
+            owners = Logic.ReadAll<Owner>();
+            dataGridView_Owners.DataSource = owners;
+        }
+
+        //показать машины владельца
+        private void button10_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int ownerID = int.Parse(textBox5.Text);
+
+                Owner owner = Logic.Read<Owner>(ownerID);
+                List<Car> cars = Logic.ReadAll<Car>();
+
+                bool carFound = false;
+
+                carsOwnedByOwners = new List<Car>();
+                if (owner != null)
+                {
+                    foreach (Car car in cars)
+                    {
+                        if (car.IdOwner == ownerID)
+                        {
+                            carsOwnedByOwners.Add(car);
+                            carFound = true;
+                        }
+                    }
+                    if (!carFound)
+                    {
+                        carsOwnedByOwners = new List<Car>();
+                        MessageBox.Show("У этого владельца нет машин.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Владелей с таким Id не зарегистрирован.");
+                }
+            }
+            catch
+            {
+                MessageBox.Show($"Ошибка");
+            }
+            dataGridView_CarsOwnedByOwners.DataSource = carsOwnedByOwners;
+        }
+
+        //добавить машину владельцу
+        private void button11_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int ownerID = int.Parse(textBox6.Text);
+
+                Owner owner = Logic.Read<Owner>(ownerID);
+
+                if (owner != null)
+                {
+                    if (carsFree.Count != 0)
+                    {
+                        int carID = int.Parse(textBox7.Text);
+
+                        bool carFound = false; // Флаг для отслеживания найденной машины
+
+                        foreach (Car freeCar in carsFree)
+                        {
+                            if (freeCar.Id == carID)
+                            {
+                                owner.IdCarsOwner.Add(carID); // добавляем id машины владельцу
+                                Logic.Update(owner);
+                                freeCar.IdOwner = ownerID; // добавляем id владельца машине
+                                Logic.Update(freeCar);
+
+
+                                MessageBox.Show($"Успешно! Машина {freeCar.Model} добавлена владельцу {owner.Name}");
+                                carFound = true;
+                                break;
+
+                            }
+                        }
+                        if (!carFound)
+                        {
+                            MessageBox.Show("Этой машины нет или она занята");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Свободных машин нет");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Владелец с таким Id не зарегистрирован.");
+                }
+            }
+            catch
+            {
+                MessageBox.Show($"Ошибка");
+            }
+            carsFree = Logic.ReadAll<Car>().Where(car => car.IdOwner == null).ToList();
+            dataGridView_CarsFree.DataSource = carsFree;
+        }
+
     }
 }
