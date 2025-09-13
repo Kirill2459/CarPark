@@ -135,6 +135,9 @@ namespace WindowsFormsApp
             {
                 MessageBox.Show($"Ошибка");
             }
+            carsFree = Logic.ReadAll<Car>();
+            dataGridView_CarsFree.DataSource = carsFree;
+
             owners = Logic.ReadAll<Owner>();
             dataGridView_Owners.DataSource = owners;
         }
