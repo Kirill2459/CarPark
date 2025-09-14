@@ -245,9 +245,9 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(247, 27);
+            this.textBox1.Location = new System.Drawing.Point(265, 27);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(221, 22);
+            this.textBox1.Size = new System.Drawing.Size(203, 22);
             this.textBox1.TabIndex = 1;
             // 
             // label1
@@ -287,7 +287,7 @@
             this.dataGridView_Cars.Name = "dataGridView_Cars";
             this.dataGridView_Cars.RowHeadersWidth = 51;
             this.dataGridView_Cars.RowTemplate.Height = 24;
-            this.dataGridView_Cars.Size = new System.Drawing.Size(845, 245);
+            this.dataGridView_Cars.Size = new System.Drawing.Size(904, 245);
             this.dataGridView_Cars.TabIndex = 0;
             // 
             // tabPage2
@@ -317,18 +317,18 @@
             this.groupBox7.Controls.Add(this.textBox6);
             this.groupBox7.Controls.Add(this.label10);
             this.groupBox7.Controls.Add(this.label9);
-            this.groupBox7.Location = new System.Drawing.Point(867, 393);
+            this.groupBox7.Location = new System.Drawing.Point(857, 393);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(284, 129);
+            this.groupBox7.Size = new System.Drawing.Size(294, 135);
             this.groupBox7.TabIndex = 9;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Добавление машины владельцу";
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(9, 76);
+            this.button11.Location = new System.Drawing.Point(10, 90);
             this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(269, 47);
+            this.button11.Size = new System.Drawing.Size(278, 39);
             this.button11.TabIndex = 4;
             this.button11.Text = "Добавить машину владельцу";
             this.button11.UseVisualStyleBackColor = true;
@@ -373,7 +373,7 @@
             this.dataGridView_CarsFree.Name = "dataGridView_CarsFree";
             this.dataGridView_CarsFree.RowHeadersWidth = 51;
             this.dataGridView_CarsFree.RowTemplate.Height = 24;
-            this.dataGridView_CarsFree.Size = new System.Drawing.Size(845, 135);
+            this.dataGridView_CarsFree.Size = new System.Drawing.Size(843, 135);
             this.dataGridView_CarsFree.TabIndex = 8;
             // 
             // label8
@@ -393,14 +393,14 @@
             this.groupBox6.Controls.Add(this.label7);
             this.groupBox6.Location = new System.Drawing.Point(857, 236);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(294, 100);
+            this.groupBox6.Size = new System.Drawing.Size(294, 125);
             this.groupBox6.TabIndex = 6;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Просмотр машин владельца";
             // 
             // button10
             // 
-            this.button10.Location = new System.Drawing.Point(10, 55);
+            this.button10.Location = new System.Drawing.Point(10, 80);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(278, 39);
             this.button10.TabIndex = 2;
@@ -498,7 +498,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(8, 7);
+            this.label4.Location = new System.Drawing.Point(1, 7);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(148, 25);
             this.label4.TabIndex = 1;
@@ -518,7 +518,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 560);
+            this.ClientSize = new System.Drawing.Size(1172, 560);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
             this.Text = "CarPark";

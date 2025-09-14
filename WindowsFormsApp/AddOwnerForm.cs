@@ -25,9 +25,10 @@ namespace WindowsFormsApp
             try
             {
                 string name;
-                while (string.IsNullOrWhiteSpace(name = textBox1.Text) || name.Any(char.IsDigit))
+                if (string.IsNullOrWhiteSpace(name = textBox1.Text) || name.Any(char.IsDigit))
                 {
                     MessageBox.Show("Имя не может быть пустым или содержать цифры. Введите имя.");
+                    return;
                 }
 
                 int year;
@@ -38,6 +39,7 @@ namespace WindowsFormsApp
                         if (year > 105)
                         {
                             MessageBox.Show("Возраст не может быть таким большим. Повторите ввод.");
+                            return;
                         }
                         else
                         {
@@ -47,6 +49,7 @@ namespace WindowsFormsApp
                     else
                     {
                         MessageBox.Show("Некорректный ввод. Введите число для возраста.");
+                        return;
                     }
                 }
 
@@ -58,14 +61,17 @@ namespace WindowsFormsApp
                         if (expYear < 0)
                         {
                             MessageBox.Show("Стаж не может быть отрицательным. Повторите ввод.");
+                            return;
                         }
                         else if (expYear > 80)
                         {
                             MessageBox.Show("Стаж не может быть больше 80 лет. Повторите ввод.");
+                            return;
                         }
                         else if (expYear > year - 18) // Проверка логики
                         {
                             MessageBox.Show($"Стаж не может быть больше чем возраст минус 18 лет ({year - 18}). Повторите ввод: ");
+                            return;
                         }
                         else
                         {
@@ -75,6 +81,7 @@ namespace WindowsFormsApp
                     else
                     {
                         MessageBox.Show("Некорректный ввод. Введите число для стажа: ");
+                        return;
                     }
                 }
 

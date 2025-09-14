@@ -173,7 +173,7 @@ namespace WindowsFormsApp
                 }
                 else
                 {
-                    MessageBox.Show("Владелей с таким Id не зарегистрирован.");
+                    MessageBox.Show("Владелец с таким Id не зарегистрирован.");
                 }
             }
             catch
