@@ -41,6 +41,8 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button3 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -128,7 +130,7 @@
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(529, 33);
             this.button6.TabIndex = 4;
-            this.button6.Text = "Узнать полную стоимость автопарка";
+            this.button6.Text = "Узнать стоимость текущих машин";
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
@@ -211,6 +213,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.textBox8);
+            this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.button1);
@@ -220,6 +224,22 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Просмотр автомобилей";
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(179, 79);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(111, 22);
+            this.textBox8.TabIndex = 4;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(24, 82);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(136, 16);
+            this.label11.TabIndex = 3;
+            this.label11.Text = "Год для сортировки";
             // 
             // groupBox2
             // 
@@ -262,11 +282,11 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(24, 76);
+            this.button2.Location = new System.Drawing.Point(328, 76);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(474, 36);
+            this.button2.Size = new System.Drawing.Size(170, 36);
             this.button2.TabIndex = 1;
-            this.button2.Text = "Найти старые машины";
+            this.button2.Text = "Найти машины";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -289,6 +309,7 @@
             this.dataGridView_Cars.RowTemplate.Height = 24;
             this.dataGridView_Cars.Size = new System.Drawing.Size(904, 245);
             this.dataGridView_Cars.TabIndex = 0;
+            this.dataGridView_Cars.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_Cars_CellDoubleClick);
             // 
             // tabPage2
             // 
@@ -375,6 +396,7 @@
             this.dataGridView_CarsFree.RowTemplate.Height = 24;
             this.dataGridView_CarsFree.Size = new System.Drawing.Size(843, 135);
             this.dataGridView_CarsFree.TabIndex = 8;
+            this.dataGridView_CarsFree.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CarsFree_CellDoubleClick);
             // 
             // label8
             // 
@@ -513,6 +535,7 @@
             this.dataGridView_Owners.RowTemplate.Height = 24;
             this.dataGridView_Owners.Size = new System.Drawing.Size(605, 170);
             this.dataGridView_Owners.TabIndex = 0;
+            this.dataGridView_Owners.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_Owners_CellDoubleClick);
             // 
             // Form1
             // 
@@ -529,6 +552,7 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Cars)).EndInit();
@@ -591,6 +615,8 @@
         private System.Windows.Forms.Button button11;
         private System.Windows.Forms.TextBox textBox7;
         private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.Label label11;
     }
 }
 

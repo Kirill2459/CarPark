@@ -53,7 +53,7 @@ namespace ConsoleApp
                 Console.WriteLine("1. Показать все машины");
                 Console.WriteLine("2. Добавить машину");
                 Console.WriteLine("3. Изменить машину");
-                Console.WriteLine("4. Найти старые машины");
+                Console.WriteLine("4. Сортировать машины по году");
                 Console.WriteLine("5. Удалить машину");
                 Console.WriteLine("6. Узнать стоимость автопарка.");
                 Console.WriteLine("7. Отсортировать машины по бренду.");
@@ -138,18 +138,22 @@ namespace ConsoleApp
                         }
                         break;
                     case "4":
-                        List<Car> vintageCars= Logic.GetVintageCars();
-                        Console.WriteLine("Винтажные машины:");
-                        if (vintageCars.Count == 0)
+                        Console.Write("Введите год: ");
+                        int yearForSort = int.Parse(Console.ReadLine());
+                        List<Car> carsSortedByYear= Logic.SortByYear(yearForSort);
+                        Console.WriteLine($"Машины произведеный после {yearForSort} года:");
+                        if (carsSortedByYear.Count == 0)
                         {
                             Console.WriteLine("Машин нет");
                         }
                         else
                         {
-                            foreach (Car car in vintageCars)
+                            foreach (Car car in carsSortedByYear)
                             {
                                 Console.WriteLine($"Id: {car.Id}. {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
                             }
+                            Console.WriteLine();
+                            Console.WriteLine($"Суммарная стоимость: {Logic.GetCarsPrice(carsSortedByYear)}");
                         }
                         break;
                     case "5":
@@ -190,7 +194,8 @@ namespace ConsoleApp
                         }
                         break;
                     case "6":
-                        decimal costCarPark = Logic.AllPrice();
+                        List<Car> carsForGetCarsPrice = Logic.ReadAll<Car>();
+                        decimal costCarPark = Logic.GetCarsPrice(carsForGetCarsPrice);
                         Console.WriteLine($"Стоимость всего автопарка составляет {costCarPark} руб.");
                         break;
                     case "7":

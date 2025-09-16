@@ -43,8 +43,15 @@ namespace WindowsFormsApp
         //найти старые машины
         private void button2_Click(object sender, EventArgs e)
         {
-            cars = Logic.GetVintageCars();
-            dataGridView_Cars.DataSource = cars;
+            try
+            {
+                cars = Logic.SortByYear(int.Parse(textBox8.Text));
+                dataGridView_Cars.DataSource = cars;
+            }
+            catch
+            {
+                MessageBox.Show("Введены неверные данные.");
+            }
         }
 
         //сортировать по бренду
@@ -95,11 +102,12 @@ namespace WindowsFormsApp
             dataGridView_Cars.DataSource = cars;
         }
 
-        //узнать полную стоимость автопарка
+        //узнать стоимость текущих машин
         private void button6_Click(object sender, EventArgs e)
         {
-            decimal allPrice = Logic.AllPrice();
-            MessageBox.Show($"Полная стоимость автопарка составляет {allPrice} рублей.");
+            List<Car> currentCars = (List<Car>)dataGridView_Cars.DataSource;
+            decimal allPrice = Logic.GetCarsPrice(currentCars);
+            MessageBox.Show($"Стоимость текущих машин составляет {allPrice} рублей.");
         }
 
         //удалить владельца
@@ -285,6 +293,30 @@ namespace WindowsFormsApp
 
             owners = Logic.ReadAll<Owner>();
             dataGridView_Owners.DataSource = owners;
+        }
+
+        private void dataGridView_Owners_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var value = dataGridView_Owners.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+
+            textBox4.Text = value != null ? value.ToString() : string.Empty;
+            textBox5.Text = value != null ? value.ToString() : string.Empty;
+            textBox6.Text = value != null ? value.ToString() : string.Empty;
+        }
+
+        private void dataGridView_CarsFree_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var value = dataGridView_CarsFree.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+
+            textBox7.Text = value != null ? value.ToString() : string.Empty;
+        }
+
+        private void dataGridView_Cars_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var value = dataGridView_Cars.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+
+            textBox2.Text = value != null ? value.ToString() : string.Empty;
+            textBox3.Text = value != null ? value.ToString() : string.Empty;
         }
     }
 }

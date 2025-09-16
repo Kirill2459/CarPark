@@ -13,6 +13,8 @@ namespace Model
 {
     public class Logic
     {
+        
+        
         // Поднимаемся на 3 уровня вверх от исполняемого файла
         static string basePath = Path.GetFullPath(Path.Combine(
             Environment.CurrentDirectory,
@@ -172,10 +174,10 @@ namespace Model
         /// </summary>
         /// <returns>Возвращает отсортированный список</returns>
 
-        public static List<Car> GetVintageCars()
+        public static List<Car> SortByYear(int year)
         {
             List<Car> cars = ReadAll<Car>();
-            return cars.Where(car => car.Year <= 1990).ToList();
+            return cars.Where(car => car.Year >= year).ToList();
         }
 
         // Сортировка по бренду
@@ -190,15 +192,16 @@ namespace Model
             return cars.Where(car => car.Brand == brand).ToList();
         }
 
+
+
         // Общая стоимость автопарка
         /// <summary>
         /// Метод для вывода стоимости автопарка
         /// </summary>
         /// <returns>Возвращает сумму стоимостей машин.</returns>
-        public static decimal AllPrice()
+        public static decimal GetCarsPrice(List<Car> currentCars)
         {
-            List<Car> cars = ReadAll<Car>();
-            return cars.Sum(c => c.Price);
+            return currentCars.Sum(c => c.Price);
         }
 
 
