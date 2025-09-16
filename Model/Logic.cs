@@ -20,6 +20,14 @@ namespace Model
 
 
         //==============JSON=================
+        
+        
+        /// <summary>
+        /// Метод для возвращения всего списка объектов из json.
+        /// </summary>
+        /// <typeparam name="T">Тип читаемого списка объектов.</typeparam>
+        /// <returns></returns>
+       
         public static List<T> ReadAll<T>()
         {
             
@@ -29,6 +37,13 @@ namespace Model
             List<T> entities = JsonConvert.DeserializeObject<List<T>>(jsonString);
             return entities;
         }
+
+        /// <summary>
+        /// Метод для возвращения объекта из json.
+        /// </summary>
+        /// <typeparam name="T">Тип читаемого объекта.</typeparam>
+        /// <param name="id"> Ключевое свойство объекта.</param>
+        /// <returns></returns>
 
         public static T Read<T>(int id)
         {
@@ -44,6 +59,12 @@ namespace Model
             return entity;
         }
 
+        /// <summary>
+        /// Метод для добавление объекта.
+        /// </summary>
+        /// <typeparam name="T">Тип добавляемого объекта.</typeparam>
+        /// <param name="entity">Добавляемый объект.</param>
+        
         public static void Add<T>(T entity)
         {
             List<T> entities = ReadAll<T>();
@@ -52,6 +73,12 @@ namespace Model
             string jsonOut = JsonConvert.SerializeObject(entities);
             File.WriteAllText(pathOut, jsonOut);
         }
+
+        /// <summary>
+        /// Метод для удаления объекта.
+        /// </summary>
+        /// <typeparam name="T">Тип удаляемого объекта.</typeparam>
+        /// <param name="id">Ключ для удаления объекта.</param>
 
         public static void Delete<T>(int id)
         {
@@ -73,6 +100,12 @@ namespace Model
             }
         }
 
+        /// <summary>
+        /// Метод для обновления существующего объекта.
+        /// </summary>
+        /// <typeparam name="T">Тип обновляемого объекта.</typeparam>
+        /// <param name="updateEntity">Изменённый объект</param>
+        /// <exception cref="ArgumentException"></exception>
         public static void Update<T>(T updateEntity)
         {
             var propertyInfo = typeof(T).GetProperty("Id");
@@ -88,7 +121,10 @@ namespace Model
         //===================================
 
 
-        //генератор Id
+        /// <summary>
+        /// Метод для генерации ID.
+        /// </summary>
+        /// <returns>Возвращает новый ID.</returns>
         public static int GeneratorId()
         {
             int id = int.Parse(File.ReadAllText(Path.Combine(basePath, "id.txt")));
@@ -100,6 +136,14 @@ namespace Model
 
 
         // Создание машины
+        /// <summary>
+        /// Метод для создания машин.
+        /// </summary>
+        /// <param name="brand">Марка.</param>
+        /// <param name="model">Модель.</param>
+        /// <param name="year">Год.</param>
+        /// <param name="price">Цена.</param>
+        /// <returns>Возвращает сформированный объект.</returns>
         public static Car CreateCar(string brand, string model, int year, decimal price)
         {
             var car = new Car
@@ -121,7 +165,13 @@ namespace Model
 
         //_________БИЗНЕС ФУНКЦИИ___________
 
+
         // Чтение только винтажных машин
+        /// <summary>
+        /// Метод для вывода винтажных машин.
+        /// </summary>
+        /// <returns>Возвращает отсортированный список</returns>
+
         public static List<Car> GetVintageCars()
         {
             List<Car> cars = ReadAll<Car>();
@@ -129,6 +179,11 @@ namespace Model
         }
 
         // Сортировка по бренду
+        /// <summary>
+        /// Метод для выводва машин определенного бренда.
+        /// </summary>
+        /// <param name="brand">Марка.</param>
+        /// <returns>Возвращает отсортированный список.</returns>
         public static List<Car> GetCarsByBrand(string brand)
         {
             List<Car> cars = ReadAll<Car>();
@@ -136,6 +191,10 @@ namespace Model
         }
 
         // Общая стоимость автопарка
+        /// <summary>
+        /// Метод для вывода стоимости автопарка
+        /// </summary>
+        /// <returns>Возвращает сумму стоимостей машин.</returns>
         public static decimal AllPrice()
         {
             List<Car> cars = ReadAll<Car>();
@@ -150,6 +209,13 @@ namespace Model
         
 
         // Создание владельца
+        /// <summary>
+        /// Метод для создания владельца.
+        /// </summary>
+        /// <param name="name">Имя</param>
+        /// <param name="year">Возраст</param>
+        /// <param name="experienceYear">Стаж вождения.</param>
+        /// <returns>Возвращает сформированный объект.</returns>
         public static Owner CreateOwner(string name, int year, int experienceYear)
         {
             var owner = new Owner

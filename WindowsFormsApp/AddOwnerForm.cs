@@ -32,57 +32,46 @@ namespace WindowsFormsApp
                 }
 
                 int year;
-                while (true)
+                
+                if (int.TryParse(textBox2.Text, out year))
                 {
-                    if (int.TryParse(textBox2.Text, out year))
+                    if (year > 105)
                     {
-                        if (year > 105)
-                        {
-                            MessageBox.Show("Возраст не может быть таким большим. Повторите ввод.");
-                            return;
-                        }
-                        else
-                        {
-                            break; // Ввод корректен
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Некорректный ввод. Введите число для возраста.");
+                        MessageBox.Show("Возраст не может быть таким большим. Повторите ввод.");
                         return;
                     }
                 }
+                else
+                {
+                    MessageBox.Show("Некорректный ввод. Введите число для возраста.");
+                    return;
+                }
 
                 int expYear;
-                while (true)
+                
+                if (int.TryParse(textBox3.Text, out expYear))
                 {
-                    if (int.TryParse(textBox3.Text, out expYear))
+                    if (expYear < 0)
                     {
-                        if (expYear < 0)
-                        {
-                            MessageBox.Show("Стаж не может быть отрицательным. Повторите ввод.");
-                            return;
-                        }
-                        else if (expYear > 80)
-                        {
-                            MessageBox.Show("Стаж не может быть больше 80 лет. Повторите ввод.");
-                            return;
-                        }
-                        else if (expYear > year - 18) // Проверка логики
-                        {
-                            MessageBox.Show($"Стаж не может быть больше чем возраст минус 18 лет ({year - 18}). Повторите ввод: ");
-                            return;
-                        }
-                        else
-                        {
-                            break; // Ввод корректен
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Некорректный ввод. Введите число для стажа: ");
+                        MessageBox.Show("Стаж не может быть отрицательным. Повторите ввод.");
                         return;
                     }
+                    else if (expYear > 80)
+                    {
+                        MessageBox.Show("Стаж не может быть больше 80 лет. Повторите ввод.");
+                        return;
+                    }
+                    else if (expYear > year - 18) // Проверка логики
+                    {
+                        MessageBox.Show($"Стаж не может быть больше чем возраст минус 18 лет ({year - 18}). Повторите ввод: ");
+                        return;
+                    }
+                    
+                }
+                else
+                {
+                    MessageBox.Show("Некорректный ввод. Введите число для стажа: ");
+                    return;
                 }
 
                 Owner owner = Logic.CreateOwner(name, year, expYear);
