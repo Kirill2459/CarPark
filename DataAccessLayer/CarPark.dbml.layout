@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="CarPark">
+  <DataContextMoniker Name="/CarParkDataContext" />
+  <nestedChildShapes>
+    <classShape Id="f26508f3-63c7-48f1-9cd5-113c89f975d8" absoluteBounds="0.75, 4.375, 2, 1.9631982421875005">
+      <DataClassMoniker Name="/CarParkDataContext/Cars" />
+      <nestedChildShapes>
+        <elementListCompartment Id="296133ab-dad0-4d84-bca9-a57adeed037d" absoluteBounds="0.765, 4.835, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="db275697-1f15-4a9f-80de-4b0bb37bf04b" absoluteBounds="5.125, 2.375, 2, 1.3862939453125003">
+      <DataClassMoniker Name="/CarParkDataContext/OwnerCars" />
+      <nestedChildShapes>
+        <elementListCompartment Id="6d111883-ff2b-45e6-9f2d-bf98e53a2ac9" absoluteBounds="5.1400000000000006, 2.835, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="44429c20-436a-417d-928a-a33bf4326059" absoluteBounds="0.75, 0.875, 2, 1.5785953776041663">
+      <DataClassMoniker Name="/CarParkDataContext/Owners" />
+      <nestedChildShapes>
+        <elementListCompartment Id="6318b3aa-0f84-4851-a969-3a7b2a712684" absoluteBounds="0.765, 1.335, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.75 : 5.35659912109375); (6.125 : 5.35659912109375); (6.125 : 3.7612939453125)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/CarParkDataContext/Cars/Cars_OwnerCars" />
+      <nodes>
+        <classShapeMoniker Id="f26508f3-63c7-48f1-9cd5-113c89f975d8" />
+        <classShapeMoniker Id="db275697-1f15-4a9f-80de-4b0bb37bf04b" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(2.75 : 1.6249995); (6.125 : 1.6249995); (6.125 : 2.375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/CarParkDataContext/Owners/Owners_OwnerCars" />
+      <nodes>
+        <classShapeMoniker Id="44429c20-436a-417d-928a-a33bf4326059" />
+        <classShapeMoniker Id="db275697-1f15-4a9f-80de-4b0bb37bf04b" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

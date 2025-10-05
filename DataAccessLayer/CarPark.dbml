@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="CarPark" Class="CarParkDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=HonorPC\SQLEXPRESS;Initial Catalog=CarPark;Integrated Security=True;Trust Server Certificate=True" SettingsObjectName="DataAccessLayer.Properties.Settings" SettingsPropertyName="CarParkConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Cars" Member="Cars">
+    <Type Name="Cars">
+      <Column Name="ID_car" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Brand" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="Model" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="Year" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Price" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
+      <Column Name="IdOwner" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Cars_OwnerCars" Member="OwnerCars" ThisKey="ID_car" OtherKey="ID_car" Type="OwnerCars" />
+    </Type>
+  </Table>
+  <Table Name="dbo.OwnerCars" Member="OwnerCars">
+    <Type Name="OwnerCars">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ID_owner" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ID_car" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Cars_OwnerCars" Member="Cars" ThisKey="ID_car" OtherKey="ID_car" Type="Cars" IsForeignKey="true" />
+      <Association Name="Owners_OwnerCars" Member="Owners" ThisKey="ID_owner" OtherKey="ID_owner" Type="Owners" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Owners" Member="Owners">
+    <Type Name="Owners">
+      <Column Name="ID_owner" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="Year" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ExperienceYear" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Owners_OwnerCars" Member="OwnerCars" ThisKey="ID_owner" OtherKey="ID_owner" Type="OwnerCars" />
+    </Type>
+  </Table>
+</Database>

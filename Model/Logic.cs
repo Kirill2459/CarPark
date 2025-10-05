@@ -1,156 +1,256 @@
-﻿using Model.Entities;
-using Newtonsoft.Json;
-using System;
+﻿using DataAccessLayer;
+using DataAccessLayer.Dapper;
+using Model.Entities;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Model
 {
     public class Logic
     {
-        
-        
-        // Поднимаемся на 3 уровня вверх от исполняемого файла
-        static string basePath = Path.GetFullPath(Path.Combine(
-            Environment.CurrentDirectory,
-            @"..\..\..\DataFiles"));
+        private static IOwnerRepository _ownerRepository;
+        private static ICarRepository _carRepository;
+        private static string _connectionString = "Data Source=HonorPC\\SQLEXPRESS;Initial Catalog=CarPark;Integrated Security=True";
 
-
-        //==============JSON=================
         
-        
-        /// <summary>
-        /// Метод для возвращения всего списка объектов из json.
-        /// </summary>
-        /// <typeparam name="T">Тип читаемого списка объектов.</typeparam>
-        /// <returns></returns>
-       
-        public static List<T> ReadAll<T>()
+        static Logic()
         {
-            
-
-            string path = Path.Combine(basePath, typeof(T).Name + ".json");
-            string jsonString = File.ReadAllText(path);
-            List<T> entities = JsonConvert.DeserializeObject<List<T>>(jsonString);
-            return entities;
+            _ownerRepository = new DapperOwnerRepository(_connectionString);
+            _carRepository = new DapperCarRepository(_connectionString);
         }
 
-        /// <summary>
-        /// Метод для возвращения объекта из json.
-        /// </summary>
-        /// <typeparam name="T">Тип читаемого объекта.</typeparam>
-        /// <param name="id"> Ключевое свойство объекта.</param>
-        /// <returns></returns>
+        public static List<T> ReadAll<T>()
+        {
+            if (typeof(T) == typeof(Owner))
+                return ReadAllOwners().Cast<T>().ToList();
+            else if (typeof(T) == typeof(Car))
+                return ReadAllCars().Cast<T>().ToList();
+
+            return new List<T>();
+        }
 
         public static T Read<T>(int id)
         {
-            List<T> entities = ReadAll<T>();
+            if (typeof(T) == typeof(Owner))
+                return (T)(object)ReadOwner(id);
+            else if (typeof(T) == typeof(Car))
+                return (T)(object)ReadCar(id);
 
-            var propertyInfo = typeof(T).GetProperty("Id");
-            T entity = entities.FirstOrDefault(item =>
-            {
-                var Id = propertyInfo.GetValue(item);
-                return Id != null && Id.Equals(id);
-            });
-
-            return entity;
+            return default(T);
         }
 
-        /// <summary>
-        /// Метод для добавление объекта.
-        /// </summary>
-        /// <typeparam name="T">Тип добавляемого объекта.</typeparam>
-        /// <param name="entity">Добавляемый объект.</param>
-        
         public static void Add<T>(T entity)
         {
-            List<T> entities = ReadAll<T>();
-            entities.Add(entity);
-            string pathOut = Path.Combine(basePath, typeof(T).Name + ".json");
-            string jsonOut = JsonConvert.SerializeObject(entities);
-            File.WriteAllText(pathOut, jsonOut);
+            if (typeof(T) == typeof(Owner))
+                AddOwner((Owner)(object)entity);
+            else if (typeof(T) == typeof(Car))
+                AddCar((Car)(object)entity);
         }
-
-        /// <summary>
-        /// Метод для удаления объекта.
-        /// </summary>
-        /// <typeparam name="T">Тип удаляемого объекта.</typeparam>
-        /// <param name="id">Ключ для удаления объекта.</param>
 
         public static void Delete<T>(int id)
         {
-            List<T> entities = ReadAll<T>();
+            if (typeof(T) == typeof(Owner))
+                DeleteOwner(id);
+            else if (typeof(T) == typeof(Car))
+                DeleteCar(id);
+        }
 
-            var propertyInfo = typeof(T).GetProperty("Id");
-            T entity = entities.FirstOrDefault(item =>
-            {
-                var Id = propertyInfo.GetValue(item);
-                return Id != null && Id.Equals(id);
-            });
+        public static void Update<T>(T updateEntity)
+        {
+            if (typeof(T) == typeof(Owner))
+                UpdateOwner((Owner)(object)updateEntity);
+            else if (typeof(T) == typeof(Car))
+                UpdateCar((Car)(object)updateEntity);
+        }
 
-            if (entity != null)
+        // ============ OWNER METHODS ============
+
+        public static List<Owner> ReadAllOwners()
+        {
+            var ownersRep = _ownerRepository.ReadAll();
+            var result = new List<Owner>();
+
+            foreach (var ownerRep in ownersRep)
             {
-                entities.Remove(entity);
-                string pathOut = Path.Combine(basePath, typeof(T).Name + ".json");
-                string jsonOut = JsonConvert.SerializeObject(entities);
-                File.WriteAllText(pathOut, jsonOut);
+                var owner = ConvertToOwner(ownerRep);
+                // Загружаем список машин владельца
+                owner.IdCarsOwner = _ownerRepository.GetOwnerCars(owner.Id)
+                    .Select(c => c.ID_car).ToList();
+                result.Add(owner);
+            }
+            return result;
+        }
+
+        public static Owner ReadOwner(int id)
+        {
+            var ownerRep = _ownerRepository.ReadById(id);
+            if (ownerRep == null) return null;
+
+            var owner = ConvertToOwner(ownerRep);
+            owner.IdCarsOwner = _ownerRepository.GetOwnerCars(owner.Id)
+                .Select(c => c.ID_car).ToList();
+            return owner;
+        }
+
+        public static void AddOwner(Owner owner)
+        {
+            var ownerRep = ConvertToOwnerRep(owner);
+            _ownerRepository.Add(ownerRep);
+            owner.Id = ownerRep.ID_owner; // Обновляем ID
+
+            // Добавляем связи с машинами
+            foreach (var carId in owner.IdCarsOwner)
+            {
+                _ownerRepository.AddCarToOwner(owner.Id, carId);
             }
         }
 
-        /// <summary>
-        /// Метод для обновления существующего объекта.
-        /// </summary>
-        /// <typeparam name="T">Тип обновляемого объекта.</typeparam>
-        /// <param name="updateEntity">Изменённый объект</param>
-        /// <exception cref="ArgumentException"></exception>
-        public static void Update<T>(T updateEntity)
+        public static void UpdateOwner(Owner owner)
         {
-            var propertyInfo = typeof(T).GetProperty("Id");
-            if (propertyInfo == null)
-                throw new ArgumentException("Класс должен иметь свойство Id");
+            var ownerRep = ConvertToOwnerRep(owner);
+            _ownerRepository.Update(ownerRep);
 
-            // Правильное получение значения
-            int id = (int)propertyInfo.GetValue(updateEntity);
+            // Обновляем связи с машинами
+            var currentCars = _ownerRepository.GetOwnerCars(owner.Id).Select(c => c.ID_car).ToList();
 
-            Delete<T>(id);
-            Add(updateEntity);
-        }
-        //===================================
+            // Добавляем новые связи
+            foreach (var carId in owner.IdCarsOwner.Except(currentCars))
+            {
+                _ownerRepository.AddCarToOwner(owner.Id, carId);
+            }
 
-
-        /// <summary>
-        /// Метод для генерации ID.
-        /// </summary>
-        /// <returns>Возвращает новый ID.</returns>
-        public static int GeneratorId()
-        {
-            int id = int.Parse(File.ReadAllText(Path.Combine(basePath, "id.txt")));
-            ++id;
-            File.WriteAllText(Path.Combine(basePath, "id.txt"), id.ToString());
-            return id;
+            // Удаляем старые связи
+            foreach (var carId in currentCars.Except(owner.IdCarsOwner))
+            {
+                _ownerRepository.RemoveCarFromOwner(owner.Id, carId);
+            }
         }
 
+        public static void DeleteOwner(int id)
+        {
+            _ownerRepository.Delete(id);
+        }
 
+        // ============ CAR METHODS ============
 
-        // Создание машины
-        /// <summary>
-        /// Метод для создания машин.
-        /// </summary>
-        /// <param name="brand">Марка.</param>
-        /// <param name="model">Модель.</param>
-        /// <param name="year">Год.</param>
-        /// <param name="price">Цена.</param>
-        /// <returns>Возвращает сформированный объект.</returns>
+        public static List<Car> ReadAllCars()
+        {
+            return _carRepository.ReadAll().Select(ConvertToCar).ToList();
+        }
+
+        public static Car ReadCar(int id)
+        {
+            var carRep = _carRepository.ReadById(id);
+            return carRep == null ? null : ConvertToCar(carRep);
+        }
+
+        public static void AddCar(Car car)
+        {
+            var carRep = ConvertToCarRep(car);
+            _carRepository.Add(carRep);
+            car.Id = carRep.ID_car;
+        }
+
+        public static void UpdateCar(Car car)
+        {
+            var carRep = ConvertToCarRep(car);
+            _carRepository.Update(carRep);
+        }
+
+        public static void DeleteCar(int id)
+        {
+            _carRepository.Delete(id);
+        }
+
+        // ============ RELATIONSHIP METHODS ============
+
+        public static void AddCarToOwner(int ownerId, int carId)
+        {
+            _ownerRepository.AddCarToOwner(ownerId, carId);
+        }
+
+        public static void RemoveCarFromOwner(int ownerId, int carId)
+        {
+            _ownerRepository.RemoveCarFromOwner(ownerId, carId);
+        }
+
+        public static List<Car> GetOwnerCars(int ownerId)
+        {
+            return _ownerRepository.GetOwnerCars(ownerId).Select(ConvertToCar).ToList();
+        }
+
+        public static List<Owner> GetCarOwners(int carId)
+        {
+            return _carRepository.GetCarOwners(carId).Select(ConvertToOwner).ToList();
+        }
+
+        // ============ CONVERSION METHODS ============
+
+        private static Owner ConvertToOwner(OwnerRep ownerRep)
+        {
+            return new Owner
+            {
+                Id = ownerRep.ID_owner,
+                Name = ownerRep.Name,
+                Year = ownerRep.Year,
+                ExperienceYear = ownerRep.ExperienceYear
+            };
+        }
+
+        private static OwnerRep ConvertToOwnerRep(Owner owner)
+        {
+            return new OwnerRep
+            {
+                ID_owner = owner.Id,
+                Name = owner.Name,
+                Year = owner.Year,
+                ExperienceYear = owner.ExperienceYear
+            };
+        }
+
+        private static Car ConvertToCar(CarRep carRep)
+        {
+            return new Car
+            {
+                Id = carRep.ID_car,  // ← Маппим ID_car → Id,
+                Brand = carRep.Brand,
+                Model = carRep.Model,
+                Year = carRep.Year,
+                IdOwner = carRep.IdOwner,
+                Price = carRep.Price
+            };
+        }
+
+        private static CarRep ConvertToCarRep(Car car)
+        {
+            return new CarRep
+            {
+                ID_car = car.Id,
+                Brand = car.Brand,
+                Model = car.Model,
+                Year = car.Year,
+                IdOwner = car.IdOwner,
+                Price = car.Price
+            };
+        }
+
+        // ============ BUSINESS METHODS ============
+
+        public static Owner CreateOwner(string name, int year, int experienceYear)
+        {
+            var owner = new Owner
+            {
+                Name = name,
+                Year = year,
+                ExperienceYear = experienceYear
+            };
+            return owner;
+        }
+
         public static Car CreateCar(string brand, string model, int year, decimal price)
         {
             var car = new Car
             {
-                Id = GeneratorId(),
                 Brand = brand,
                 Model = model,
                 Year = year,
@@ -159,135 +259,21 @@ namespace Model
             return car;
         }
 
-
-
-
-
-
-
-        //_________БИЗНЕС ФУНКЦИИ___________
-
-
-        // Чтение только винтажных машин
-        /// <summary>
-        /// Метод для вывода винтажных машин.
-        /// </summary>
-        /// <returns>Возвращает отсортированный список</returns>
-
-        public static List<Car> SortByYear(int year)
+        public static List<Car> SortByYear(int minYear)
         {
-            List<Car> cars = ReadAll<Car>();
-            return cars.Where(car => car.Year >= year).ToList();
+            var cars = ReadAllCars();
+            return cars.Where(car => car.Year >= minYear).ToList();
         }
 
-        // Сортировка по бренду
-        /// <summary>
-        /// Метод для выводва машин определенного бренда.
-        /// </summary>
-        /// <param name="brand">Марка.</param>
-        /// <returns>Возвращает отсортированный список.</returns>
         public static List<Car> GetCarsByBrand(string brand)
         {
-            List<Car> cars = ReadAll<Car>();
+            var cars = ReadAllCars();
             return cars.Where(car => car.Brand == brand).ToList();
         }
 
-
-
-        // Общая стоимость автопарка
-        /// <summary>
-        /// Метод для вывода стоимости автопарка
-        /// </summary>
-        /// <returns>Возвращает сумму стоимостей машин.</returns>
-        public static decimal GetCarsPrice(List<Car> currentCars)
+        public static decimal GetCarsPrice(List<Car> cars)
         {
-            return currentCars.Sum(c => c.Price);
+            return cars.Sum(c => c.Price);
         }
-
-
-
-
-
-
-        
-
-        // Создание владельца
-        /// <summary>
-        /// Метод для создания владельца.
-        /// </summary>
-        /// <param name="name">Имя</param>
-        /// <param name="year">Возраст</param>
-        /// <param name="experienceYear">Стаж вождения.</param>
-        /// <returns>Возвращает сформированный объект.</returns>
-        public static Owner CreateOwner(string name, int year, int experienceYear)
-        {
-            var owner = new Owner
-            {
-                Id = GeneratorId(),
-                Name = name,
-                Year = year,
-                ExperienceYear = experienceYear
-            };
-            return owner;
-        }
-
-
-        //// Добавление машины владельцу
-        //public Owner AddCarOwner(int idOwner, int idCar)
-        //{
-        //    var owner = _owners.FirstOrDefault(c => c.Id == idOwner);
-        //    if (owner == null)
-        //        throw new ArgumentException($"Владелец с ID {idOwner} не найден");
-
-        //    var car = _cars.FirstOrDefault(c => c.Id == idCar);
-        //    if (car == null)
-        //        throw new ArgumentException($"Машина с ID {idCar} не найдена");
-
-        //    if (!car.NoOwner)
-        //        throw new InvalidOperationException($"Машина с ID {idCar} уже занята");
-
-        //    // Проверяем, нет ли уже такой машины у владельца
-        //    if (owner.CarsOwner.Any(c => c.Id == idCar))
-        //        throw new InvalidOperationException($"Машина с ID {idCar} уже принадлежит этому владельцу");
-
-        //    // Добавляем машину и обновляем флаг
-        //    owner.CarsOwner.Add(car);
-        //    car.NoOwner = false;
-
-        //    return owner;
-        //}
-
-        //// Вывод машин владельца 
-        //public List<Car> ShowCarsOwner(int idOwner)
-        //{
-        //    var owner = _owners.FirstOrDefault(c => c.Id == idOwner);
-        //    if (owner == null)
-        //        throw new ArgumentException($"Владелец с ID {idOwner} не найден");
-
-        //    return owner.CarsOwner;
-        //}
-
-        //// Удаление машины у владельца
-        //public Owner DeleteCarOwner(int idCar, int idOwner)
-        //{
-        //    var owner = _owners.FirstOrDefault(c => c.Id == idOwner);
-        //    if (owner == null)
-        //        throw new ArgumentException($"Владелец с ID {idOwner} не найден");
-
-        //    var car = _cars.FirstOrDefault(c => c.Id == idCar);
-        //    if (car == null)
-        //        throw new ArgumentException($"Машина с ID {idCar} не найдена");
-
-        //    if (car == null)
-        //        throw new ArgumentException($"Машина с ID {idCar} не найдена");
-
-        //    if (car.NoOwner)
-        //        throw new InvalidOperationException($"Машина с ID {idCar} свободна");
-
-        //    owner.CarsOwner.Remove(car);
-        //    car.NoOwner = true;
-
-        //    return owner;
-        //}
     }
 }

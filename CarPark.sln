@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFiles", "DataFiles", "{
 		DataFiles\Owner.json = DataFiles\Owner.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{8EACBD38-B2FB-4697-B121-35164A12191E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{5B111222-D7E1-4A3D-AEB4-D14B6047F334}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B111222-D7E1-4A3D-AEB4-D14B6047F334}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B111222-D7E1-4A3D-AEB4-D14B6047F334}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EACBD38-B2FB-4697-B121-35164A12191E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EACBD38-B2FB-4697-B121-35164A12191E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EACBD38-B2FB-4697-B121-35164A12191E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EACBD38-B2FB-4697-B121-35164A12191E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
