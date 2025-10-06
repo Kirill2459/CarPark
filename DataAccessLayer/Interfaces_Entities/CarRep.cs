@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccessLayer
 {
+    [Table("Cars")]
     public class CarRep : IDomainObject
     {
+        [Key]
         public int ID_car { get; set; }
         public string Brand { get; set; }
         public string Model { get; set; }

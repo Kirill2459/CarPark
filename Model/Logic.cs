@@ -1,8 +1,11 @@
 ﻿using DataAccessLayer;
 using DataAccessLayer.Dapper;
+using DataAccessLayer.EntityFrameWork;
 using Model.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
+
 
 namespace Model
 {
@@ -10,13 +13,21 @@ namespace Model
     {
         private static IOwnerRepository _ownerRepository;
         private static ICarRepository _carRepository;
-        private static string _connectionString = "Data Source=HonorPC\\SQLEXPRESS;Initial Catalog=CarPark;Integrated Security=True";
+        private static string _connectionString = "Data Source=HOME-PC\\SQLEXPRESS;Initial Catalog=CarPark;" +
+                                                    "Integrated Security=True; MultipleActiveResultSets=True";
 
         
+        
+
         static Logic()
         {
-            _ownerRepository = new DapperOwnerRepository(_connectionString);
-            _carRepository = new DapperCarRepository(_connectionString);
+            //_ownerRepository = new DapperOwnerRepository(_connectionString);
+            //_carRepository = new DapperCarRepository(_connectionString);
+
+
+            DBContext dbContext = new DBContext(_connectionString);
+            _ownerRepository = new EntityOwnerRepository(dbContext);
+            _carRepository = new EntityCarRepository(dbContext);
         }
 
         public static List<T> ReadAll<T>()
