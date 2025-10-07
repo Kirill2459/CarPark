@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.Entity;
-using System.Data.SqlClient;
-using System.Data;
 
 namespace DataAccessLayer.EntityFrameWork
 {
@@ -42,9 +43,19 @@ namespace DataAccessLayer.EntityFrameWork
 
         public void Update(OwnerRep item)
         {
-            OwnerRep ownerRep = _context.Owners.Where(o => o.ID_owner == item.ID_owner).FirstOrDefault();
-            Delete(item.ID_owner);
-            Add(item);
+            // Находим существующую запись
+            var existingOwner = _context.Owners.FirstOrDefault(o => o.ID_owner == item.ID_owner);
+
+            if (existingOwner == null)
+            {
+                throw new ArgumentException($"Владелец с ID {item.ID_owner} не найден");
+            }
+
+            // Обновляем свойства существующей записи
+            existingOwner.Name = item.Name;
+            existingOwner.Year = item.Year;
+            existingOwner.ExperienceYear = item.ExperienceYear;
+
             _context.SaveChanges();
         }
 
@@ -62,14 +73,18 @@ namespace DataAccessLayer.EntityFrameWork
 
         public void AddCarToOwner(int ownerId, int carId)
         {
-            OwnerCar ownerCar = new OwnerCar() { OwnerId = ownerId, CarId = carId };
-            _context.Set<OwnerCar>().Add(ownerCar);
+            OwnerCar ownerCar = new OwnerCar()
+            {
+                ID_owner = ownerId,  // ← Используй точное имя из класса
+                ID_car = carId
+            };
+            _context.OwnerCars.Add(ownerCar);
             _context.SaveChanges();
         }
 
         public IEnumerable<CarRep> GetOwnerCars(int ownerId)
         {
-            var carsID = _context.OwnerCars.Where(o => o.OwnerId == ownerId).Select(o => o.CarId);
+            var carsID = _context.OwnerCars.Where(o => o.ID_owner == ownerId).Select(o => o.ID_car);
             List<CarRep> carsRep = new List<CarRep>();
             foreach(var carID in carsID)
             {
@@ -80,7 +95,7 @@ namespace DataAccessLayer.EntityFrameWork
 
         public void RemoveCarFromOwner(int ownerId, int carId)
         {
-            OwnerCar ownerCar =  _context.OwnerCars.Where(o => o.OwnerId == ownerId && o.CarId == carId).FirstOrDefault();
+            OwnerCar ownerCar =  _context.OwnerCars.Where(o => o.ID_owner == ownerId && o.ID_car == carId).FirstOrDefault();
             if (ownerCar != null)
             {
                 _context.Set<OwnerCar>().Remove(ownerCar);

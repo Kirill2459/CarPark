@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Linq;
+using System.Linq;
 using System.Reflection.Emit;
+using System.Text;
+using System.Threading.Tasks;
 
 
 namespace DataAccessLayer.EntityFrameWork
@@ -19,16 +20,5 @@ namespace DataAccessLayer.EntityFrameWork
         public DBContext(string stringConection) : base(stringConection)
         { }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<OwnerCar>()
-                .Property(e => e.OwnerId)
-                .HasColumnName("ID_owner");
-            modelBuilder.Entity<OwnerCar>()
-                .Property(e => e.CarId)
-                .HasColumnName("ID_car");
-        }
     }
 }

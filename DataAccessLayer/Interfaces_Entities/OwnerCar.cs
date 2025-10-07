@@ -8,15 +8,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccessLayer
 {
-    [Table("OwnerCars")]
-    public class OwnerCar : IDomainObject
+    public class OwnerCar
     {
-        [Key]
-        [Column("ID")]
-        public int Id { get; set; }
-        [Column("ID_owner")]
-        public int OwnerId { get; set; }
-        [Column("ID_car")]
-        public int CarId { get; set; }
+        
+        public int ID { get; set; }
+        public int ID_owner { get; set; }
+        public int ID_car { get; set; }
     }
 }

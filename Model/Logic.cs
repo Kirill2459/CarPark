@@ -13,11 +13,10 @@ namespace Model
     {
         private static IOwnerRepository _ownerRepository;
         private static ICarRepository _carRepository;
-        private static string _connectionString = "Data Source=HOME-PC\\SQLEXPRESS;Initial Catalog=CarPark;" +
-                                                    "Integrated Security=True; MultipleActiveResultSets=True";
+        private static string _connectionString = "Data Source = HonorPC\\SQLEXPRESS;Initial Catalog = CarPark; Integrated Security = True; MultipleActiveResultSets=True";
 
-        
-        
+
+        //"Data Source = HonorPC\\SQLEXPRESS;Initial Catalog = CarPark; Integrated Security = True; Encrypt=True"
 
         static Logic()
         {
