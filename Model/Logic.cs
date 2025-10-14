@@ -2,6 +2,7 @@
 using DataAccessLayer.Dapper;
 using DataAccessLayer.EntityFrameWork;
 using Model.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
@@ -13,21 +14,46 @@ namespace Model
     {
         private static IOwnerRepository _ownerRepository;
         private static ICarRepository _carRepository;
-        private static string _connectionString = "Data Source = HOME-PC\\SQLEXPRESS;Initial Catalog = CarPark; Integrated Security = True; MultipleActiveResultSets=True";
+
+        //Изменяйте только эту часть (HOME-PC) во избежание ошибок
+        private static string _connectionString = "Data Source = HonorPC\\SQLEXPRESS;Initial Catalog = CarPark; Integrated Security = True; MultipleActiveResultSets=True";
 
 
-        //"Data Source = HonorPC\\SQLEXPRESS;Initial Catalog = CarPark; Integrated Security = True; Encrypt=True"
+        
 
         static Logic()
         {
-            _ownerRepository = new DapperOwnerRepository(_connectionString);
-            _carRepository = new DapperCarRepository(_connectionString);
-
-
-            //DBContext dbContext = new DBContext(_connectionString);
-            //_ownerRepository = new EntityOwnerRepository(dbContext);
-            // _carRepository = new EntityCarRepository(dbContext);
+            // КОНФИГУРАЦИЯ ORM - ИЗМЕНИТЕ ЗДЕСЬ ДЛЯ ВЫБОРА (OrmType.Dapper) или (OrmType.EntityFramework)
+            InitializeRepositories(OrmType.Dapper);
         }
+
+        private static void InitializeRepositories(OrmType ormType)
+        {
+            switch (ormType)
+            {
+                case OrmType.Dapper:
+                    _ownerRepository = new DapperOwnerRepository(_connectionString);
+                    _carRepository = new DapperCarRepository(_connectionString);
+                    break;
+
+                case OrmType.EntityFramework:
+                    var dbContext = new DBContext(_connectionString);
+                    _ownerRepository = new EntityOwnerRepository(dbContext);
+                    _carRepository = new EntityCarRepository(dbContext);
+                    break;
+
+                default:
+                    throw new ArgumentException($"Unsupported ORM type: {ormType}");
+            }
+        }
+
+        private enum OrmType
+        {
+            Dapper,
+            EntityFramework
+        }
+
+
 
         /// <summary>
         /// Обобщающий метод для чтения всех сущностей
