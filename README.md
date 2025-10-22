@@ -36,7 +36,7 @@
 ```bash
 Install-Package Dapper -Version 2.1.66
 Install-Package EntityFramework -Version 6.5.1
-
+```
 ## Функциональность
 
 ### 🚗 Управление автомобилями
