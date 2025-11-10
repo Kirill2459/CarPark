@@ -14,7 +14,7 @@ namespace Model
     public class SimpleConfigModule : NinjectModule
     {
         //Изменяйте только эту часть (HOME-PC) во избежание ошибок
-        private static string _connectionString = "Data Source = HOME-PC\\SQLEXPRESS;Initial Catalog = CarPark; Integrated Security = True; MultipleActiveResultSets=True";
+        private static string _connectionString = "Data Source = HONORPC\\SQLEXPRESS;Initial Catalog = CarPark; Integrated Security = True; MultipleActiveResultSets=True";
         
         public override void Load()
         {

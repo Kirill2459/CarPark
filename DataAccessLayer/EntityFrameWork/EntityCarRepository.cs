@@ -32,11 +32,22 @@ namespace DataAccessLayer.EntityFrameWork
 
         public IEnumerable<CarRep> ReadAll()
         {
+            // Принудительно обновляем данные из базы
+            _context.ChangeTracker.Entries().Where(e => e.Entity is CarRep).ToList()
+           .ForEach(e => e.Reload());
+
             return new List<CarRep>(_context.Cars);
         }
 
         public CarRep ReadById(int id)
         {
+            // Принудительно обновляем конкретную запись
+            var car = _context.Cars.Local.FirstOrDefault(c => c.ID_car == id);
+            if (car != null)
+            {
+                _context.Entry(car).Reload();
+            }
+
             return _context.Cars.Where(o => o.ID_car == id).FirstOrDefault();
         }
 
