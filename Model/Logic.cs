@@ -12,47 +12,14 @@ namespace Model
 {
     public class Logic
     {
-        private static IOwnerRepository _ownerRepository;
-        private static ICarRepository _carRepository;
+        private readonly IOwnerRepository _ownerRepository;
+        private readonly ICarRepository _carRepository;
 
-        //Изменяйте только эту часть (HOME-PC) во избежание ошибок
-        private static string _connectionString = "Data Source = HonorPC\\SQLEXPRESS;Initial Catalog = CarPark; Integrated Security = True; MultipleActiveResultSets=True";
-
-
-        
-
-        static Logic()
+        public Logic(IOwnerRepository ownerRepository, ICarRepository carRepository)
         {
-            // КОНФИГУРАЦИЯ ORM - ИЗМЕНИТЕ ЗДЕСЬ ДЛЯ ВЫБОРА (OrmType.Dapper) или (OrmType.EntityFramework)
-            InitializeRepositories(OrmType.Dapper);
+            _ownerRepository = ownerRepository;
+            _carRepository = carRepository;
         }
-
-        private static void InitializeRepositories(OrmType ormType)
-        {
-            switch (ormType)
-            {
-                case OrmType.Dapper:
-                    _ownerRepository = new DapperOwnerRepository(_connectionString);
-                    _carRepository = new DapperCarRepository(_connectionString);
-                    break;
-
-                case OrmType.EntityFramework:
-                    var dbContext = new DBContext(_connectionString);
-                    _ownerRepository = new EntityOwnerRepository(dbContext);
-                    _carRepository = new EntityCarRepository(dbContext);
-                    break;
-
-                default:
-                    throw new ArgumentException($"Unsupported ORM type: {ormType}");
-            }
-        }
-
-        private enum OrmType
-        {
-            Dapper,
-            EntityFramework
-        }
-
 
 
         /// <summary>
@@ -60,7 +27,7 @@ namespace Model
         /// </summary>
         /// <typeparam name="T">тип сущности</typeparam>
         /// <returns>Список сущностей</returns>
-        public static List<T> ReadAll<T>()
+        public List<T> ReadAll<T>()
         {
             if (typeof(T) == typeof(Owner))
                 return ReadAllOwners().Cast<T>().ToList();
@@ -77,7 +44,7 @@ namespace Model
         /// <typeparam name="T">тип сущности</typeparam>
         /// <typeparam name="id">id сущности</typeparam>
         /// <returns>Сущность</returns>
-        public static T Read<T>(int id)
+        public T Read<T>(int id)
         {
             if (typeof(T) == typeof(Owner))
                 return (T)(object)ReadOwner(id);
@@ -93,7 +60,7 @@ namespace Model
         /// </summary>
         /// <typeparam name="T">тип сущности</typeparam>
         /// <param name="entity">сущность</param>
-        public static void Add<T>(T entity)
+        public void Add<T>(T entity)
         {
             if (typeof(T) == typeof(Owner))
                 AddOwner((Owner)(object)entity);
@@ -106,7 +73,7 @@ namespace Model
         /// </summary>
         /// <typeparam name="T">тип сущности</typeparam>
         /// <param name="id">id сущности</param>
-        public static void Delete<T>(int id)
+        public void Delete<T>(int id)
         {
             if (typeof(T) == typeof(Owner))
                 DeleteOwner(id);
@@ -119,7 +86,7 @@ namespace Model
         /// </summary>
         /// <typeparam name="T">тип сущности</typeparam>
         /// <param name="updateEntity">сущность</param>
-        public static void Update<T>(T updateEntity)
+        public void Update<T>(T updateEntity)
         {
             if (typeof(T) == typeof(Owner))
                 UpdateOwner((Owner)(object)updateEntity);
@@ -133,7 +100,7 @@ namespace Model
         /// Метод для  чтения всех владельцев
         /// </summary>
         /// <returns>Список владельцев</returns>
-        public static List<Owner> ReadAllOwners()
+        public List<Owner> ReadAllOwners()
         {
             var ownersRep = _ownerRepository.ReadAll();
             var result = new List<Owner>();
@@ -154,7 +121,7 @@ namespace Model
         /// </summary>
         /// <param name="id">id владельца</param>
         /// <returns>Владелец</returns>
-        public static Owner ReadOwner(int id)
+        public Owner ReadOwner(int id)
         {
             var ownerRep = _ownerRepository.ReadById(id);
             if (ownerRep == null) return null;
@@ -169,7 +136,7 @@ namespace Model
         /// Метод для добавления владельца
         /// </summary>
         /// <param name="owner">Владелец</param>
-        public static void AddOwner(Owner owner)
+        public void AddOwner(Owner owner)
         {
             var ownerRep = ConvertToOwnerRep(owner);
             _ownerRepository.Add(ownerRep);
@@ -186,7 +153,7 @@ namespace Model
         /// Метод для обновления владельца
         /// </summary>
         /// <param name="owner">владелец</param>
-        public static void UpdateOwner(Owner owner)
+        public void UpdateOwner(Owner owner)
         {
             var ownerRep = ConvertToOwnerRep(owner);
             _ownerRepository.Update(ownerRep);
@@ -211,7 +178,7 @@ namespace Model
         /// Удаление владельца
         /// </summary>
         /// <param name="id">id владельца</param>
-        public static void DeleteOwner(int id)
+        public void DeleteOwner(int id)
         {
             _ownerRepository.Delete(id);
         }
@@ -222,7 +189,7 @@ namespace Model
         /// Метод для  чтения всех машин
         /// </summary>
         /// <returns>Список машин</returns>
-        public static List<Car> ReadAllCars()
+        public List<Car> ReadAllCars()
         {
             return _carRepository.ReadAll().Select(ConvertToCar).ToList();
         }
@@ -232,7 +199,7 @@ namespace Model
         /// </summary>
         /// <param name="id">id машины</param>
         /// <returns>Машина</returns>
-        public static Car ReadCar(int id)
+        public Car ReadCar(int id)
         {
             var carRep = _carRepository.ReadById(id);
             return carRep == null ? null : ConvertToCar(carRep);
@@ -242,7 +209,7 @@ namespace Model
         /// Метод для добавления одной машины
         /// </summary>
         /// <param name="car">машина</param>
-        public static void AddCar(Car car)
+        public void AddCar(Car car)
         {
             var carRep = ConvertToCarRep(car);
             _carRepository.Add(carRep);
@@ -253,7 +220,7 @@ namespace Model
         /// Метод для обновления машины
         /// </summary>
         /// <param name="car">машина</param>
-        public static void UpdateCar(Car car)
+        public void UpdateCar(Car car)
         {
             var carRep = ConvertToCarRep(car);
             _carRepository.Update(carRep);
@@ -263,7 +230,7 @@ namespace Model
         /// Удаление машины
         /// </summary>
         /// <param name="id">id машины</param>
-        public static void DeleteCar(int id)
+        public void DeleteCar(int id)
         {
             _carRepository.Delete(id);
         }
@@ -275,7 +242,7 @@ namespace Model
         /// </summary>
         /// <param name="ownerId">id владельца</param>
         /// <param name="carId">id машины</param>
-        public static void AddCarToOwner(int ownerId, int carId)
+        public void AddCarToOwner(int ownerId, int carId)
         {
             _ownerRepository.AddCarToOwner(ownerId, carId);
         }
@@ -285,7 +252,7 @@ namespace Model
         /// </summary>
         /// <param name="ownerId">id владельца</param>
         /// <param name="carId">id машины</param>
-        public static void RemoveCarFromOwner(int ownerId, int carId)
+        public void RemoveCarFromOwner(int ownerId, int carId)
         {
             _ownerRepository.RemoveCarFromOwner(ownerId, carId);
         }
@@ -294,7 +261,7 @@ namespace Model
         /// получение машин владельца
         /// </summary>
         /// <param name="ownerId">id владельца</param>
-        public static List<Car> GetOwnerCars(int ownerId)
+        public List<Car> GetOwnerCars(int ownerId)
         {
             return _ownerRepository.GetOwnerCars(ownerId).Select(ConvertToCar).ToList();
         }
@@ -303,7 +270,7 @@ namespace Model
         /// получение владельца машины
         /// </summary>
         /// <param name="carId">id машины</param>
-        public static List<Owner> GetCarOwners(int carId)
+        public List<Owner> GetCarOwners(int carId)
         {
             return _carRepository.GetCarOwners(carId).Select(ConvertToOwner).ToList();
         }
@@ -423,7 +390,7 @@ namespace Model
         /// </summary>
         /// <param name="minYear">год начиная скоторого будут выбираться машины</param>
         /// <returns>Список машин, отсортированный по году выпуска авто</returns>
-        public static List<Car> SortByYear(int minYear)
+        public List<Car> SortByYear(int minYear)
         {
             var cars = ReadAllCars();
             return cars.Where(car => car.Year >= minYear).ToList();
@@ -434,7 +401,7 @@ namespace Model
         /// </summary>
         /// <param name="brand">бранд авто</param>
         /// <returns>Список машин, отсортированный по бренду авто</returns>
-        public static List<Car> GetCarsByBrand(string brand)
+        public List<Car> GetCarsByBrand(string brand)
         {
             var cars = ReadAllCars();
             return cars.Where(car => car.Brand == brand).ToList();

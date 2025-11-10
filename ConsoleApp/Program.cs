@@ -6,13 +6,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.AccessControl;
+using Ninject;
+
+using System.Web.UI.WebControls;
 
 namespace ConsoleApp
 {
     internal class Program
     {
+        private static Logic Logic;
+        
         static void Main(string[] args)
         {
+            IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+            Logic = ninjectKernel.Get<Logic>();
+
             while (true)
             {
                 Console.Clear();

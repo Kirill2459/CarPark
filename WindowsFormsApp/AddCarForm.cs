@@ -9,14 +9,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Ninject;
+
 
 namespace WindowsFormsApp
 {
     public partial class AddCarForm : Form
     {
+        private static Logic Logic;
+
+
         public AddCarForm()
         {
             InitializeComponent();
+
+            IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+            Logic = ninjectKernel.Get<Logic>();
         }
 
         //добавить

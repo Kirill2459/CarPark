@@ -9,19 +9,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Ninject;
 
 namespace WindowsFormsApp
 {
     public partial class UpdateCarForm : Form
     {
         Form1 form1 { get; set; }
+
+        private static Logic Logic;
+
         public UpdateCarForm()
         {
             InitializeComponent();
+
+            IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+            Logic = ninjectKernel.Get<Logic>();
         }
+
         public UpdateCarForm(Form1 form)
         {
             InitializeComponent();
+
+            IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+            Logic = ninjectKernel.Get<Logic>();
+
             form1 = form;
 
             Car car = Logic.Read<Car>(form1.idForUpdateCar);

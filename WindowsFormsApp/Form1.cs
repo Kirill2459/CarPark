@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Ninject;
+
 
 namespace WindowsFormsApp
 {
@@ -22,9 +24,15 @@ namespace WindowsFormsApp
         public int idForUpdateCar { get; set; } //Id который будет передаваться в форму UpdateCarForm
 
 
+        private static Logic Logic;
+
+
         public Form1()
         {
             InitializeComponent();
+
+            IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+            Logic = ninjectKernel.Get<Logic>();
 
             owners = Logic.ReadAll<Owner>();
             dataGridView_Owners.DataSource = owners;

@@ -9,14 +9,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Ninject;
 
 namespace WindowsFormsApp
 {
     public partial class AddOwnerForm : Form
     {
+        private static Logic Logic;
+
+
         public AddOwnerForm()
         {
             InitializeComponent();
+
+            IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+            Logic = ninjectKernel.Get<Logic>();
         }
 
         //добавить
