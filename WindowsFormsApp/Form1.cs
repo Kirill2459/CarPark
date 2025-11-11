@@ -328,15 +328,15 @@ namespace WindowsFormsApp
 
         private void dataGridView_CarsFree_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || e.RowIndex >= dataGridView_Owners.Rows.Count ||
-        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Owners.Columns.Count)
+            if (e.RowIndex < 0 || e.RowIndex >= dataGridView_CarsFree.Rows.Count ||
+        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_CarsFree.Columns.Count)
             {
                 MessageBox.Show("Выберете ячейку с Id");
                 return;
             }
 
-            // Проверяем, что кликнули НЕ на столбец Id
-            if (dataGridView_Owners.Columns[e.ColumnIndex].Name != "Id")
+            // ЗАМЕНИТЬ dataGridView_Owners на dataGridView_CarsFree
+            if (dataGridView_CarsFree.Columns[e.ColumnIndex].Name != "Id")
             {
                 MessageBox.Show("Выберете ячейку с Id");
                 return;
@@ -349,15 +349,15 @@ namespace WindowsFormsApp
 
         private void dataGridView_Cars_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || e.RowIndex >= dataGridView_Owners.Rows.Count ||
-        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Owners.Columns.Count)
+            if (e.RowIndex < 0 || e.RowIndex >= dataGridView_Cars.Rows.Count ||
+        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Cars.Columns.Count)
             {
                 MessageBox.Show("Выберете ячейку с Id");
                 return;
             }
 
-            // Проверяем, что кликнули НЕ на столбец Id
-            if (dataGridView_Owners.Columns[e.ColumnIndex].Name != "Id")
+            // ЗАМЕНИТЬ dataGridView_Owners на dataGridView_Cars
+            if (dataGridView_Cars.Columns[e.ColumnIndex].Name != "Id")
             {
                 MessageBox.Show("Выберете ячейку с Id");
                 return;
