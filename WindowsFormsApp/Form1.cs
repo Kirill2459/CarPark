@@ -305,6 +305,20 @@ namespace WindowsFormsApp
 
         private void dataGridView_Owners_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0 || e.RowIndex >= dataGridView_Owners.Rows.Count ||
+        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Owners.Columns.Count)
+            {
+                MessageBox.Show("Выберете ячейку с Id");
+                return;
+            }
+
+            // Проверяем, что кликнули НЕ на столбец Id
+            if (dataGridView_Owners.Columns[e.ColumnIndex].Name != "Id")
+            {
+                MessageBox.Show("Выберете ячейку с Id");
+                return;
+            }
+
             var value = dataGridView_Owners.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
             textBox4.Text = value != null ? value.ToString() : string.Empty;
@@ -314,6 +328,20 @@ namespace WindowsFormsApp
 
         private void dataGridView_CarsFree_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0 || e.RowIndex >= dataGridView_Owners.Rows.Count ||
+        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Owners.Columns.Count)
+            {
+                MessageBox.Show("Выберете ячейку с Id");
+                return;
+            }
+
+            // Проверяем, что кликнули НЕ на столбец Id
+            if (dataGridView_Owners.Columns[e.ColumnIndex].Name != "Id")
+            {
+                MessageBox.Show("Выберете ячейку с Id");
+                return;
+            }
+
             var value = dataGridView_CarsFree.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
             textBox7.Text = value != null ? value.ToString() : string.Empty;
@@ -321,6 +349,20 @@ namespace WindowsFormsApp
 
         private void dataGridView_Cars_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0 || e.RowIndex >= dataGridView_Owners.Rows.Count ||
+        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Owners.Columns.Count)
+            {
+                MessageBox.Show("Выберете ячейку с Id");
+                return;
+            }
+
+            // Проверяем, что кликнули НЕ на столбец Id
+            if (dataGridView_Owners.Columns[e.ColumnIndex].Name != "Id")
+            {
+                MessageBox.Show("Выберете ячейку с Id");
+                return;
+            }
+
             var value = dataGridView_Cars.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
             textBox2.Text = value != null ? value.ToString() : string.Empty;

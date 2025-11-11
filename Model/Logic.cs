@@ -1,11 +1,11 @@
 ﻿using DataAccessLayer;
-using DataAccessLayer.Dapper;
-using DataAccessLayer.EntityFrameWork;
+//using DataAccessLayer.Dapper;
+//using DataAccessLayer.EntityFrameWork;
 using Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
+//using System.Runtime.Remoting.Contexts;
 
 
 namespace Model
