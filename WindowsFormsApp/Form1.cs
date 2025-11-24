@@ -1,51 +1,46 @@
 ﻿using Model.Entities;
-using Model;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Ninject;
+using Shared;
+
 
 
 namespace WindowsFormsApp
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form, IFormView
     {
+        // Свойства для хранения данных
         public List<Car> cars { get; set; } = new List<Car>();
         public List<Owner> owners { get; set; } = new List<Owner>();
-        public List<Car> carsOwnedByOwners { get; set; } = new List<Car>(); //машины принадлежащие владельцам
-        public List<Car> carsFree { get; set; } = new List<Car>(); //свободные машины
+        public List<Car> carsOwnedByOwners { get; set; } = new List<Car>();
+        public List<Car> carsFree { get; set; } = new List<Car>();
+        public int idForUpdateCar { get; set; }
 
-        public int idForUpdateCar { get; set; } //Id который будет передаваться в форму UpdateCarForm
-
-
-        private static Logic Logic;
-
+        // События IView
+        public event Action ShowAllCarsRequested;
+        public event Action<int> FindOldCarsRequested;
+        public event Action<string> FindCarsByBrandRequested;
+        public event Action<int> DeleteCarRequested;
+        public event Action CalculateCarsPriceRequested;
+        public event Action<int> DeleteOwnerRequested;
+        public event Action<int> ShowOwnerCarsRequested;
+        public event Action<int, int> AddCarToOwnerRequested;
+        public event Action<int> UpdateCarRequested;
+        public event Action AddCarRequested;
+        public event Action AddOwnerRequested;
 
         public Form1()
         {
             InitializeComponent();
-
-            IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
-            Logic = ninjectKernel.Get<Logic>();
-
-            owners = Logic.ReadAll<Owner>();
-            dataGridView_Owners.DataSource = owners;
-
-            carsFree = Logic.ReadAll<Car>().Where(car => car.IdOwner == null).ToList();
-            dataGridView_CarsFree.DataSource = carsFree;
         }
+
+        // === СОХРАНЯЕМ ВСЕ ОРИГИНАЛЬНЫЕ МЕТОДЫ, НО МЕНЯЕМ ИХ РЕАЛИЗАЦИЮ ===
 
         //показать все машины
         private void button1_Click(object sender, EventArgs e)
         {
-            cars = Logic.ReadAll<Car>();
-            dataGridView_Cars.DataSource = cars;
+            ShowAllCarsRequested?.Invoke();
         }
 
         //найти старые машины
@@ -53,12 +48,12 @@ namespace WindowsFormsApp
         {
             try
             {
-                cars = Logic.SortByYear(int.Parse(textBox8.Text));
-                dataGridView_Cars.DataSource = cars;
+                int year = int.Parse(textBox8.Text);
+                FindOldCarsRequested?.Invoke(year);
             }
             catch
             {
-                MessageBox.Show("Введены неверные данные.");
+                ShowError("Введены неверные данные.");
             }
         }
 
@@ -66,8 +61,7 @@ namespace WindowsFormsApp
         private void button3_Click(object sender, EventArgs e)
         {
             string brand = textBox1.Text;
-            cars = Logic.GetCarsByBrand(brand);
-            dataGridView_Cars.DataSource = cars;
+            FindCarsByBrandRequested?.Invoke(brand);
         }
 
         //удалить автомобиль
@@ -76,46 +70,18 @@ namespace WindowsFormsApp
             try
             {
                 int id = int.Parse(textBox2.Text);
-
-                List<Owner> owners = Logic.ReadAll<Owner>();
-                Car car = Logic.Read<Car>(id);
-
-                if (car != null)
-                {
-                    Logic.Delete<Car>(id);
-                    foreach (Owner owner in owners)
-                    {
-                        // Проверяем содержит ли владелец эту машину
-                        if (owner.IdCarsOwner.Contains(id))
-                        {
-                            // Удаляем ID машины из списка владельца
-                            owner.IdCarsOwner.Remove(id);
-                            Logic.Update(owner); // Обновляем владельца в json
-
-                            MessageBox.Show($"Машина ID:{id} удалена у владельца {owner.Name}");
-                        }
-                    }
-                    MessageBox.Show($"Автомобиль удален.");
-                }
-                else
-                {
-                    MessageBox.Show("В автопарке нет автомобиля с таким Id.");
-                }
+                DeleteCarRequested?.Invoke(id);
             }
             catch
             {
-                MessageBox.Show("Ошибка.");
+                ShowError("Ошибка ввода ID.");
             }
-            cars = Logic.ReadAll<Car>();
-            dataGridView_Cars.DataSource = cars;
         }
 
         //узнать стоимость текущих машин
         private void button6_Click(object sender, EventArgs e)
         {
-            List<Car> currentCars = (List<Car>)dataGridView_Cars.DataSource;
-            decimal allPrice = Logic.GetCarsPrice(currentCars);
-            MessageBox.Show($"Стоимость текущих машин составляет {allPrice} рублей.");
+            CalculateCarsPriceRequested?.Invoke();
         }
 
         //удалить владельца
@@ -124,38 +90,12 @@ namespace WindowsFormsApp
             try
             {
                 int idOwner = int.Parse(textBox4.Text);
-
-                Owner owner = Logic.Read<Owner>(idOwner);
-                List<Car> cars = Logic.ReadAll<Car>();
-
-                if (owner != null)
-                {
-                    Logic.Delete<Owner>(idOwner); // удаление владельца
-
-                    foreach (Car car in cars)
-                    {
-                        if (car.IdOwner == idOwner)
-                        {
-                            car.IdOwner = null; // делаем машину владельца свободной
-                            Logic.Update(car); // сохраняем изменения в json
-                        }
-                    }
-                    MessageBox.Show($"Владелец удален.");
-                }
-                else
-                {
-                    MessageBox.Show("Нет владельца с таким Id.");
-                }
+                DeleteOwnerRequested?.Invoke(idOwner);
             }
             catch
             {
-                MessageBox.Show($"Ошибка");
+                ShowError("Ошибка ввода ID владельца.");
             }
-            carsFree = Logic.ReadAll<Car>();
-            dataGridView_CarsFree.DataSource = carsFree;
-
-            owners = Logic.ReadAll<Owner>();
-            dataGridView_Owners.DataSource = owners;
         }
 
         //показать машины владельца
@@ -164,39 +104,12 @@ namespace WindowsFormsApp
             try
             {
                 int ownerID = int.Parse(textBox5.Text);
-
-                Owner owner = Logic.Read<Owner>(ownerID);
-                List<Car> cars = Logic.ReadAll<Car>();
-
-                bool carFound = false;
-
-                carsOwnedByOwners = new List<Car>();
-                if (owner != null)
-                {
-                    foreach (Car car in cars)
-                    {
-                        if (car.IdOwner == ownerID)
-                        {
-                            carsOwnedByOwners.Add(car);
-                            carFound = true;
-                        }
-                    }
-                    if (!carFound)
-                    {
-                        carsOwnedByOwners = new List<Car>();
-                        MessageBox.Show("У этого владельца нет машин.");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Владелец с таким Id не зарегистрирован.");
-                }
+                ShowOwnerCarsRequested?.Invoke(ownerID);
             }
             catch
             {
-                MessageBox.Show($"Ошибка");
+                ShowError("Ошибка ввода ID владельца.");
             }
-            dataGridView_CarsOwnedByOwners.DataSource = carsOwnedByOwners;
         }
 
         //добавить машину владельцу
@@ -205,54 +118,13 @@ namespace WindowsFormsApp
             try
             {
                 int ownerID = int.Parse(textBox6.Text);
-
-                Owner owner = Logic.Read<Owner>(ownerID);
-
-                if (owner != null)
-                {
-                    if (carsFree.Count != 0)
-                    {
-                        int carID = int.Parse(textBox7.Text);
-
-                        bool carFound = false; // Флаг для отслеживания найденной машины
-
-                        foreach (Car freeCar in carsFree)
-                        {
-                            if (freeCar.Id == carID)
-                            {
-                                owner.IdCarsOwner.Add(carID); // добавляем id машины владельцу
-                                Logic.Update(owner);
-                                freeCar.IdOwner = ownerID; // добавляем id владельца машине
-                                Logic.Update(freeCar);
-
-
-                                MessageBox.Show($"Успешно! Машина {freeCar.Model} добавлена владельцу {owner.Name}");
-                                carFound = true;
-                                break;
-
-                            }
-                        }
-                        if (!carFound)
-                        {
-                            MessageBox.Show("Этой машины нет или она занята");
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Свободных машин нет");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Владелец с таким Id не зарегистрирован.");
-                }
+                int carID = int.Parse(textBox7.Text);
+                AddCarToOwnerRequested?.Invoke(ownerID, carID);
             }
             catch
             {
-                MessageBox.Show($"Ошибка");
+                ShowError("Ошибка ввода ID владельца или автомобиля.");
             }
-            carsFree = Logic.ReadAll<Car>().Where(car => car.IdOwner == null).ToList();
-            dataGridView_CarsFree.DataSource = carsFree;
         }
 
         //обновить информацию об автомобиле
@@ -261,26 +133,15 @@ namespace WindowsFormsApp
             try
             {
                 idForUpdateCar = int.Parse(textBox3.Text);
-
-                Car car = Logic.Read<Car>(idForUpdateCar);
-
-                if (car != null)
-                {
-                    UpdateCarForm updateCarForm = new UpdateCarForm(this);
-                    updateCarForm.ShowDialog();
-                }
-                else
-                {
-                    MessageBox.Show("В автопарке нет автомобиля с таким Id.");
-                }
+                // Передаем this (текущий Form1) в конструктор
+                UpdateCarForm updateCarForm = new UpdateCarForm(this);
+                updateCarForm.ShowDialog();
+                UpdateCarRequested?.Invoke(idForUpdateCar);
             }
             catch
             {
-                MessageBox.Show($"Ошибка");
+                ShowError("Ошибка ввода ID автомобиля.");
             }
-
-            cars = Logic.ReadAll<Car>();
-            dataGridView_Cars.DataSource = cars;
         }
 
         //добавить автомобиль в автопарк
@@ -289,8 +150,7 @@ namespace WindowsFormsApp
             AddCarForm addCarForm = new AddCarForm();
             addCarForm.ShowDialog();
 
-            cars = Logic.ReadAll<Car>();
-            dataGridView_Cars.DataSource = cars;
+            AddCarRequested?.Invoke();
         }
 
         //добавить владельца
@@ -299,20 +159,89 @@ namespace WindowsFormsApp
             AddOwnerForm addOwnerForm = new AddOwnerForm();
             addOwnerForm.ShowDialog();
 
-            owners = Logic.ReadAll<Owner>();
+            AddOwnerRequested?.Invoke();
+        }
+
+        // Реализация методов IView
+        public void DisplayCars(List<Car> cars)
+        {
+            this.cars = cars;
+            dataGridView_Cars.DataSource = null;
+            dataGridView_Cars.DataSource = cars;
+        }
+
+        public void DisplayOwners(List<Owner> owners)
+        {
+            this.owners = owners;
+            dataGridView_Owners.DataSource = null;
             dataGridView_Owners.DataSource = owners;
         }
 
+        public void DisplayFreeCars(List<Car> freeCars)
+        {
+            this.carsFree = freeCars;
+            dataGridView_CarsFree.DataSource = null;
+            dataGridView_CarsFree.DataSource = freeCars;
+        }
+
+        public void DisplayOwnerCars(List<Car> ownerCars)
+        {
+            this.carsOwnedByOwners = ownerCars;
+            dataGridView_CarsOwnedByOwners.DataSource = null;
+            dataGridView_CarsOwnedByOwners.DataSource = ownerCars;
+        }
+
+        public void ShowMessage(string message)
+        {
+            MessageBox.Show(message);
+        }
+
+        public void ShowError(string error)
+        {
+            MessageBox.Show(error, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        public int GetSelectedCarId()
+        {
+            return idForUpdateCar;
+        }
+
+        public int GetSelectedOwnerId()
+        {
+            if (int.TryParse(textBox4.Text, out int id))
+                return id;
+            return 0;
+        }
+
+        // Методы для работы с дополнительными формами
+        public void ShowUpdateCarForm()
+        {
+            UpdateCarForm updateCarForm = new UpdateCarForm(this);
+            updateCarForm.ShowDialog();
+        }
+
+        public void ShowAddCarForm()
+        {
+            AddCarForm addCarForm = new AddCarForm();
+            addCarForm.ShowDialog();
+        }
+
+        public void ShowAddOwnerForm()
+        {
+            AddOwnerForm addOwnerForm = new AddOwnerForm();
+            addOwnerForm.ShowDialog();
+        }
+
+        // Обработчики двойного клика (остаются без изменений)
         private void dataGridView_Owners_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.RowIndex >= dataGridView_Owners.Rows.Count ||
-        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Owners.Columns.Count)
+                e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Owners.Columns.Count)
             {
                 MessageBox.Show("Выберете ячейку с Id");
                 return;
             }
 
-            // Проверяем, что кликнули НЕ на столбец Id
             if (dataGridView_Owners.Columns[e.ColumnIndex].Name != "Id")
             {
                 MessageBox.Show("Выберете ячейку с Id");
@@ -329,13 +258,12 @@ namespace WindowsFormsApp
         private void dataGridView_CarsFree_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.RowIndex >= dataGridView_CarsFree.Rows.Count ||
-        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_CarsFree.Columns.Count)
+                e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_CarsFree.Columns.Count)
             {
                 MessageBox.Show("Выберете ячейку с Id");
                 return;
             }
 
-            // ЗАМЕНИТЬ dataGridView_Owners на dataGridView_CarsFree
             if (dataGridView_CarsFree.Columns[e.ColumnIndex].Name != "Id")
             {
                 MessageBox.Show("Выберете ячейку с Id");
@@ -350,13 +278,12 @@ namespace WindowsFormsApp
         private void dataGridView_Cars_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.RowIndex >= dataGridView_Cars.Rows.Count ||
-        e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Cars.Columns.Count)
+                e.ColumnIndex < 0 || e.ColumnIndex >= dataGridView_Cars.Columns.Count)
             {
                 MessageBox.Show("Выберете ячейку с Id");
                 return;
             }
 
-            // ЗАМЕНИТЬ dataGridView_Owners на dataGridView_Cars
             if (dataGridView_Cars.Columns[e.ColumnIndex].Name != "Id")
             {
                 MessageBox.Show("Выберете ячейку с Id");

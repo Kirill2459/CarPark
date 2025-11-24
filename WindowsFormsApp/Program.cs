@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Presenter;
+using Model;
+using Ninject;
 
 namespace WindowsFormsApp
 {
@@ -16,7 +16,15 @@ namespace WindowsFormsApp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            IKernel kernel = new StandardKernel(new SimpleConfigModule());
+
+            var view = new Form1();
+            var logic = kernel.Get<ILogicService>();  // Получаем по интерфейсу
+
+            var presenter = new FormPresenter(view, logic);
+
+            Application.Run(view);
         }
     }
 }

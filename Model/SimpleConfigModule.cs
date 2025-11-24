@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DataAccessLayer.Dapper;
-using DataAccessLayer;
+﻿using DataAccessLayer;
 using Ninject.Modules;
 using DataAccessLayer.EntityFrameWork;
-using Ninject;
+
 
 namespace Model
 {
@@ -15,9 +9,12 @@ namespace Model
     {
         //Изменяйте только эту часть (HOME-PC) во избежание ошибок
         private static string _connectionString = "Data Source = HONORPC\\SQLEXPRESS;Initial Catalog = CarPark; Integrated Security = True; MultipleActiveResultSets=True";
-        
+
         public override void Load()
         {
+            // Регистрируем Logic как реализацию ILogicService
+            Bind<ILogicService>().To<Logic>().InSingletonScope();
+
             // Для Dapper
             //Bind<IOwnerRepository>().To<DapperOwnerRepository>().InSingletonScope()
             //    .WithConstructorArgument("connectionString", _connectionString);
