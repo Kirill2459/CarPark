@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9C119A1C-E08D-454B-89E4-FA977E409D77}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>ConsoleApp</RootNamespace>
     <AssemblyName>ConsoleApp</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
@@ -34,6 +34,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -103,7 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleView.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -114,10 +116,6 @@
     <ProjectReference Include="..\Model\Model.csproj">
       <Project>{5b111222-d7e1-4a3d-aeb4-d14b6047f334}</Project>
       <Name>Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Presenter\Presenter.csproj">
-      <Project>{fb2650dd-5036-4be0-a60d-f03b10e78587}</Project>
-      <Name>Presenter</Name>
     </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.csproj">
       <Project>{bf74a8f3-da62-495e-b0c3-a9ff2f71b004}</Project>

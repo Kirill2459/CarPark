@@ -1,6 +1,7 @@
 ﻿using DataAccessLayer;
 using Ninject.Modules;
 using DataAccessLayer.EntityFrameWork;
+using DataAccessLayer.Dapper;
 
 
 namespace Model
@@ -16,15 +17,15 @@ namespace Model
             Bind<ILogicService>().To<Logic>().InSingletonScope();
 
             // Для Dapper
-            //Bind<IOwnerRepository>().To<DapperOwnerRepository>().InSingletonScope()
-            //    .WithConstructorArgument("connectionString", _connectionString);
-            //Bind<ICarRepository>().To<DapperCarRepository>().InSingletonScope()
-            //    .WithConstructorArgument("connectionString", _connectionString);
+            Bind<IOwnerRepository>().To<DapperOwnerRepository>().InSingletonScope()
+                .WithConstructorArgument("connectionString", _connectionString);
+            Bind<ICarRepository>().To<DapperCarRepository>().InSingletonScope()
+                .WithConstructorArgument("connectionString", _connectionString);
 
             // ИЛИ для Entity Framework
-            Bind<string>().ToConstant(_connectionString).WhenInjectedInto<DBContext>();
-            Bind<IOwnerRepository>().To<EntityOwnerRepository>().InSingletonScope();
-            Bind<ICarRepository>().To<EntityCarRepository>().InSingletonScope();
+            //Bind<string>().ToConstant(_connectionString).WhenInjectedInto<DBContext>();
+            //Bind<IOwnerRepository>().To<EntityOwnerRepository>().InSingletonScope();
+            //Bind<ICarRepository>().To<EntityCarRepository>().InSingletonScope();
         }
     }
 }

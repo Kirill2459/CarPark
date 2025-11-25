@@ -29,6 +29,7 @@ namespace WindowsFormsApp
         public event Action<int> UpdateCarRequested;
         public event Action AddCarRequested;
         public event Action AddOwnerRequested;
+        public event Action ShowOwnersRequested;
 
         public Form1()
         {

@@ -10,20 +10,32 @@ namespace ConsoleApp
 {
     public class ConsoleView : IConsoleView
     {
-        // События
-        public event Action ShowCarsRequested;
-        public event Action ShowOwnersRequested;
+        // События из ICommonView
+        public event Action ShowAllCarsRequested;
+        public event Action<int> FindOldCarsRequested;
+        public event Action<string> FindCarsByBrandRequested;
+        public event Action<int> DeleteCarRequested;
+        public event Action CalculateCarsPriceRequested;
+        public event Action<int> DeleteOwnerRequested;
+        public event Action<int> ShowOwnerCarsRequested;
+        public event Action<int, int> AddCarToOwnerRequested;
+        public event Action<int> UpdateCarRequested;
         public event Action AddCarRequested;
-        public event Action UpdateCarRequested;
-        public event Action DeleteCarRequested;
+        public event Action AddOwnerRequested;
+
+        // События из IConsoleView
+        public event Action ExitRequested;
+
+        // Старые события (нужно заменить на новые из интерфейса)
+        public event Action ShowCarsRequested
+        {
+            add { ShowAllCarsRequested += value; }
+            remove { ShowAllCarsRequested -= value; }
+        }
+
+        public event Action ShowOwnersRequested;
         public event Action SortCarsByYearRequested;
         public event Action SortCarsByBrandRequested;
-        public event Action CalculateCarsPriceRequested;
-        public event Action AddOwnerRequested;
-        public event Action AddCarToOwnerRequested;
-        public event Action ShowOwnerCarsRequested;
-        public event Action DeleteOwnerRequested;
-        public event Action ExitRequested;
 
         public void Start()
         {
@@ -70,10 +82,10 @@ namespace ConsoleApp
                 Console.WriteLine("1. Показать все машины");
                 Console.WriteLine("2. Добавить машину");
                 Console.WriteLine("3. Изменить машину");
-                Console.WriteLine("4. Сортировать машины по году");
-                Console.WriteLine("5. Удалить машину");
-                Console.WriteLine("6. Узнать стоимость автопарка");
-                Console.WriteLine("7. Отсортировать машины по бренду");
+                Console.WriteLine("4. Найти старые машины");
+                Console.WriteLine("5. Найти машины по марке");
+                Console.WriteLine("6. Удалить машину");
+                Console.WriteLine("7. Узнать стоимость автопарка");
                 Console.WriteLine("0. Назад в главное меню");
                 Console.Write("Выберите действие: ");
 
@@ -82,25 +94,29 @@ namespace ConsoleApp
                 switch (choice)
                 {
                     case "1":
-                        ShowCarsRequested?.Invoke();
+                        ShowAllCarsRequested?.Invoke();
                         break;
                     case "2":
                         AddCarRequested?.Invoke();
                         break;
                     case "3":
-                        UpdateCarRequested?.Invoke();
+                        var carId = ReadCarId();
+                        UpdateCarRequested?.Invoke(carId);
                         break;
                     case "4":
-                        SortCarsByYearRequested?.Invoke();
+                        var year = ReadInt("Введите год (машины старше этого года): ");
+                        FindOldCarsRequested?.Invoke(year);
                         break;
                     case "5":
-                        DeleteCarRequested?.Invoke();
+                        var brand = ReadString("Введите марку машины: ");
+                        FindCarsByBrandRequested?.Invoke(brand);
                         break;
                     case "6":
-                        CalculateCarsPriceRequested?.Invoke();
+                        var deleteCarId = ReadCarId();
+                        DeleteCarRequested?.Invoke(deleteCarId);
                         break;
                     case "7":
-                        SortCarsByBrandRequested?.Invoke();
+                        CalculateCarsPriceRequested?.Invoke();
                         break;
                     case "0":
                         return;
@@ -139,13 +155,17 @@ namespace ConsoleApp
                         AddOwnerRequested?.Invoke();
                         break;
                     case "3":
-                        AddCarToOwnerRequested?.Invoke();
+                        var ownerId = ReadOwnerId();
+                        var carId = ReadCarId();
+                        AddCarToOwnerRequested?.Invoke(ownerId, carId);
                         break;
                     case "4":
-                        ShowOwnerCarsRequested?.Invoke();
+                        var showOwnerId = ReadOwnerId();
+                        ShowOwnerCarsRequested?.Invoke(showOwnerId);
                         break;
                     case "5":
-                        DeleteOwnerRequested?.Invoke();
+                        var deleteOwnerId = ReadOwnerId();
+                        DeleteOwnerRequested?.Invoke(deleteOwnerId);
                         break;
                     case "0":
                         return;
@@ -159,7 +179,7 @@ namespace ConsoleApp
             }
         }
 
-        // Методы для отображения данных
+        // Методы для отображения данных из ICommonView
         public void DisplayCars(List<Car> cars)
         {
             Console.WriteLine();
@@ -192,27 +212,30 @@ namespace ConsoleApp
             }
         }
 
-        public void DisplayOwnerCars(List<Car> cars, Owner owner)
+        public void DisplayOwnerCars(List<Car> ownerCars)
         {
             Console.WriteLine();
-            if (owner == null)
+            if (ownerCars.Count == 0)
             {
-                ShowError("Владелец не найден");
-                return;
-            }
-
-            Console.WriteLine($"Владельцу: {owner.Name} принадлежат машины:");
-            if (cars.Count == 0)
-            {
-                Console.WriteLine("У этого владельца нет машин.");
+                Console.WriteLine("У владельца нет машин.");
             }
             else
             {
-                foreach (Car car in cars)
+                foreach (Car car in ownerCars)
                 {
                     Console.WriteLine($"Id: {car.Id}. {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
                 }
             }
+        }
+
+        // Перегрузка метода для обратной совместимости
+        public void DisplayOwnerCars(List<Car> cars, Owner owner)
+        {
+            if (owner != null)
+            {
+                Console.WriteLine($"\nВладельцу: {owner.Name} принадлежат машины:");
+            }
+            DisplayOwnerCars(cars);
         }
 
         public void DisplayFreeCars(List<Car> freeCars)
@@ -242,7 +265,7 @@ namespace ConsoleApp
             Console.WriteLine($"\nОшибка: {error}");
         }
 
-        // Методы для ввода данных
+        // Методы для ввода данных из IConsoleView
         public string ReadString(string prompt)
         {
             Console.Write(prompt);

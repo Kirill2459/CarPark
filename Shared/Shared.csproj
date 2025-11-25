@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICommonView.cs" />
     <Compile Include="IConsoleView.cs" />
     <Compile Include="IFormView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
