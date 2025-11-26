@@ -137,7 +137,10 @@ namespace WindowsFormsApp
                 // Передаем this (текущий Form1) в конструктор
                 UpdateCarForm updateCarForm = new UpdateCarForm(this);
                 updateCarForm.ShowDialog();
-                UpdateCarRequested?.Invoke(idForUpdateCar);
+                //UpdateCarRequested?.Invoke(idForUpdateCar);
+
+                ShowAllCarsRequested?.Invoke();
+
             }
             catch
             {

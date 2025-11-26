@@ -37,6 +37,17 @@ namespace WindowsFormsApp
             form1 = form;
 
             Car car = Logic.Read<Car>(form1.idForUpdateCar);
+
+            // Проверка на существование машины
+            if (car == null)
+            {
+                MessageBox.Show($"Машины с ID {form1.idForUpdateCar} не существует!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close(); // Закрываем форму сразу
+                return;
+            }
+
+            
             textBox1.Text = car.Brand;
             textBox2.Text = car.Model;
             textBox3.Text = car.Year.ToString();
@@ -49,7 +60,8 @@ namespace WindowsFormsApp
         {
             try
             {
-                Car car = Logic.Read<Car>(form1.idForUpdateCar);
+                // Получаем существующую машину
+                Car existingCar = Logic.Read<Car>(form1.idForUpdateCar);
 
                 string brand = textBox1.Text;
                 string model = textBox2.Text;
@@ -58,20 +70,24 @@ namespace WindowsFormsApp
 
                 if (!string.IsNullOrWhiteSpace(brand) && !string.IsNullOrWhiteSpace(model))
                 {
-                    Car newCar = Logic.CreateCar(brand, model, year, price);
-                    newCar.Id = form1.idForUpdateCar;
-                    Logic.Update(newCar);
-                    MessageBox.Show($"Автомобиль успешно изменен: {newCar.Brand} {newCar.Model}, {newCar.Year} года, - {newCar.Price} руб");
+                    // Обновляем существующую машину, сохраняя владельца
+                    existingCar.Brand = brand;
+                    existingCar.Model = model;
+                    existingCar.Year = year;
+                    existingCar.Price = price;
+                    // IdOwner сохраняется автоматически - мы его не трогаем!
+
+                    Logic.Update(existingCar);
+                    MessageBox.Show($"Автомобиль успешно изменен: {existingCar.Brand} {existingCar.Model}, {existingCar.Year} года, - {existingCar.Price} руб");
                 }
                 else
                 {
                     MessageBox.Show($"Есть пустые поля");
                 }
-                
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка");
+                MessageBox.Show($"Ошибка: {ex.Message}");
             }
 
             this.Close();

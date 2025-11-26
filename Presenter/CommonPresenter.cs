@@ -281,7 +281,10 @@ namespace Presenter
                     {
                         _view.ShowMessage("Введите новые свойства для машины:");
                         var newCar = consoleView.ReadCarData();
+
                         newCar.Id = carId;
+                        newCar.IdOwner = car.IdOwner;
+
                         _logic.Update(newCar);
                         _view.ShowMessage($"Автомобиль изменен: {newCar.Brand} {newCar.Model}, {newCar.Year} года, - {newCar.Price} руб");
                     }
