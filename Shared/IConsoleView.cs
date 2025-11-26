@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Entities;
+using DataTransferObject;
 
 namespace Shared
 {
@@ -15,8 +16,8 @@ namespace Shared
         decimal ReadDecimal(string prompt);
         int ReadCarId();
         int ReadOwnerId();
-        Car ReadCarData();
-        Owner ReadOwnerData();
+        CarDTO ReadCarData();
+        OwnerDTO ReadOwnerData();
 
         // Методы для меню
         void ShowMainMenu();

@@ -1,9 +1,10 @@
-﻿using Model.Entities;
-using Model;
+﻿//using Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Shared;
+using DataTransferObject;
+//using Model.Entities;
 
 
 namespace ConsoleApp
@@ -180,7 +181,7 @@ namespace ConsoleApp
         }
 
         // Методы для отображения данных из ICommonView
-        public void DisplayCars(List<Car> cars)
+        public void DisplayCars(List<CarDTO> cars)
         {
             Console.WriteLine();
             if (cars.Count == 0)
@@ -189,14 +190,14 @@ namespace ConsoleApp
             }
             else
             {
-                foreach (Car car in cars)
+                foreach (CarDTO car in cars)
                 {
                     Console.WriteLine($"Id: {car.Id}. {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
                 }
             }
         }
 
-        public void DisplayOwners(List<Owner> owners)
+        public void DisplayOwners(List<OwnerDTO> owners)
         {
             Console.WriteLine();
             if (owners.Count == 0)
@@ -205,14 +206,14 @@ namespace ConsoleApp
             }
             else
             {
-                foreach (Owner owner in owners)
+                foreach (OwnerDTO owner in owners)
                 {
                     Console.WriteLine($"Id: {owner.Id}. {owner.Name}, возраст:{owner.Year}, стаж:{owner.ExperienceYear}");
                 }
             }
         }
 
-        public void DisplayOwnerCars(List<Car> ownerCars)
+        public void DisplayOwnerCars(List<CarDTO> ownerCars)
         {
             Console.WriteLine();
             if (ownerCars.Count == 0)
@@ -221,7 +222,7 @@ namespace ConsoleApp
             }
             else
             {
-                foreach (Car car in ownerCars)
+                foreach (CarDTO car in ownerCars)
                 {
                     Console.WriteLine($"Id: {car.Id}. {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
                 }
@@ -229,7 +230,7 @@ namespace ConsoleApp
         }
 
         // Перегрузка метода для обратной совместимости
-        public void DisplayOwnerCars(List<Car> cars, Owner owner)
+        public void DisplayOwnerCars(List<CarDTO> cars, OwnerDTO owner)
         {
             if (owner != null)
             {
@@ -238,7 +239,7 @@ namespace ConsoleApp
             DisplayOwnerCars(cars);
         }
 
-        public void DisplayFreeCars(List<Car> freeCars)
+        public void DisplayFreeCars(List<CarDTO> freeCars)
         {
             Console.WriteLine();
             if (freeCars.Count == 0)
@@ -248,7 +249,7 @@ namespace ConsoleApp
             else
             {
                 Console.WriteLine("Свободные машины:");
-                foreach (Car freeCar in freeCars)
+                foreach (CarDTO freeCar in freeCars)
                 {
                     Console.WriteLine($"Id: {freeCar.Id}. {freeCar.Brand} {freeCar.Model}, {freeCar.Year} года, - {freeCar.Price} руб");
                 }
@@ -304,17 +305,25 @@ namespace ConsoleApp
             return ReadInt("Введите ID владельца: ");
         }
 
-        public Car ReadCarData()
+        public CarDTO ReadCarData()
         {
             string brand = ReadString("Марка: ");
             string model = ReadString("Модель: ");
             int year = ReadInt("Год: ");
             decimal price = ReadDecimal("Цена(руб): ");
 
-            return Logic.CreateCar(brand, model, year, price);
+            CarDTO carDTO = new CarDTO
+            {
+                Brand = brand,
+                Model = model,
+                Year = year,
+                Price = price
+            };
+
+            return carDTO;
         }
 
-        public Owner ReadOwnerData()
+        public OwnerDTO ReadOwnerData()
         {
             string name;
             while (string.IsNullOrWhiteSpace(name = ReadString("Имя: ")) || name.Any(char.IsDigit))
@@ -358,7 +367,14 @@ namespace ConsoleApp
                 }
             }
 
-            return Logic.CreateOwner(name, year, expYear);
+            OwnerDTO ownerDTO = new OwnerDTO
+            {
+                Name = name,
+                Year = year,
+                ExperienceYear = expYear
+            };
+
+            return ownerDTO;
         }
     }
 }

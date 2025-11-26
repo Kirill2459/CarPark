@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Model;
 using Model.Entities;
 using Shared;
+using DataTransferObject;
+using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace Presenter
 {
@@ -51,8 +55,8 @@ namespace Presenter
         {
             try
             {
-                var owners = _logic.ReadAll<Owner>();
-                var freeCars = _logic.ReadAll<Car>().Where(c => c.IdOwner == null).ToList();
+                var owners = ConvertInOwnersDTO(_logic.ReadAll<Owner>());
+                var freeCars = ConvertInCarsDTO(_logic.ReadAll<Car>().Where(c => c.IdOwner == null).ToList());
 
                 _view.DisplayOwners(owners);
                 _view.DisplayFreeCars(freeCars);
@@ -69,7 +73,7 @@ namespace Presenter
         {
             try
             {
-                var cars = _logic.ReadAll<Car>();
+                var cars = ConvertInCarsDTO(_logic.ReadAll<Car>());
                 _view.DisplayCars(cars);
             }
             catch (Exception ex)
@@ -82,7 +86,7 @@ namespace Presenter
         {
             try
             {
-                var cars = _logic.SortByYear(minYear);
+                var cars = ConvertInCarsDTO(_logic.SortByYear(minYear));
                 _view.DisplayCars(cars);
             }
             catch (Exception ex)
@@ -95,7 +99,7 @@ namespace Presenter
         {
             try
             {
-                var cars = _logic.GetCarsByBrand(brand);
+                var cars = ConvertInCarsDTO(_logic.GetCarsByBrand(brand));
                 _view.DisplayCars(cars);
             }
             catch (Exception ex)
@@ -197,7 +201,7 @@ namespace Presenter
         {
             try
             {
-                var owners = _logic.ReadAll<Owner>();
+                var owners = ConvertInOwnersDTO(_logic.ReadAll<Owner>());
                 _view.DisplayOwners(owners);
 
             }
@@ -212,7 +216,7 @@ namespace Presenter
             try
             {
                 var owner = _logic.Read<Owner>(ownerId);
-                var ownerCars = _logic.GetOwnerCars(ownerId);
+                var ownerCars = ConvertInCarsDTO(_logic.GetOwnerCars(ownerId));
 
                 if (owner != null)
                 {
@@ -280,7 +284,15 @@ namespace Presenter
                     if (_view is IConsoleView consoleView)
                     {
                         _view.ShowMessage("Введите новые свойства для машины:");
-                        var newCar = consoleView.ReadCarData();
+                        var newCarDTO = consoleView.ReadCarData();
+
+                        Car newCar = new Car()
+                        {
+                            Brand = newCarDTO.Brand,
+                            Model = newCarDTO.Model,
+                            Year = newCarDTO.Year,
+                            Price = newCarDTO.Price
+                        };
 
                         newCar.Id = carId;
                         newCar.IdOwner = car.IdOwner;
@@ -309,7 +321,15 @@ namespace Presenter
                 // Для консоли - запросить данные и добавить
                 if (_view is IConsoleView consoleView)
                 {
-                    var car = consoleView.ReadCarData();
+                    var carDTO = consoleView.ReadCarData();
+
+                    Car car = new Car() {
+                        Brand = carDTO.Brand,
+                        Model = carDTO.Model,
+                        Year = carDTO.Year,
+                        Price = carDTO.Price
+                    };
+
                     _logic.Add(car);
                     _view.ShowMessage($"Добавлена: {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
                 }
@@ -352,8 +372,8 @@ namespace Presenter
         {
             try
             {
-                var owners = _logic.ReadAll<Owner>();
-                var cars = _logic.ReadAll<Car>();
+                var owners = ConvertInOwnersDTO(_logic.ReadAll<Owner>());
+                var cars = ConvertInCarsDTO(_logic.ReadAll<Car>());
                 var freeCars = cars.Where(c => c.IdOwner == null).ToList();
 
                 _view.DisplayOwners(owners);
@@ -364,6 +384,41 @@ namespace Presenter
             {
                 _view.ShowError($"Ошибка обновления данных: {ex.Message}");
             }
+        }
+
+
+        /// <summary>
+        /// Проебразуем список объектов Car в список объектов CarDTO
+        /// </summary>
+        /// <param name="cars">список объектов Car</param>
+        /// <returns>список объектов CarDTO</returns>
+        public List<CarDTO> ConvertInCarsDTO(List<Car> cars)
+        {
+            List<CarDTO> carsDTO = new List<CarDTO>();
+            foreach(Car car in cars)
+            {
+                CarDTO carDTO = new CarDTO(car.Id, car.Brand, car.Model, car.Year, car.Price, car.IdOwner);
+                carsDTO.Add(carDTO);
+            }
+
+            return carsDTO;
+        }
+
+        /// <summary>
+        /// Проебразуем список объектов Owner в список объектов OwnerDTO
+        /// </summary>
+        /// <param name="owners">список объектов Owner</param>
+        /// <returns>список объектов OwnerDTO</returns>
+        public List<OwnerDTO> ConvertInOwnersDTO(List<Owner> owners)
+        {
+            List<OwnerDTO> ownersDTO = new List<OwnerDTO>();
+            foreach (Owner owner in owners)
+            {
+                OwnerDTO ownerDTO = new OwnerDTO(owner.Id, owner.Name, owner.Year, owner.ExperienceYear, owner.IdCarsOwner);
+                ownersDTO.Add(ownerDTO);
+            }
+
+            return ownersDTO;
         }
     }
 }

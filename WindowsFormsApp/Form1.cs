@@ -1,8 +1,9 @@
-﻿using Model.Entities;
+﻿//using Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Shared;
+using DataTransferObject;
 
 
 
@@ -11,10 +12,10 @@ namespace WindowsFormsApp
     public partial class Form1 : Form, IFormView
     {
         // Свойства для хранения данных
-        public List<Car> cars { get; set; } = new List<Car>();
-        public List<Owner> owners { get; set; } = new List<Owner>();
-        public List<Car> carsOwnedByOwners { get; set; } = new List<Car>();
-        public List<Car> carsFree { get; set; } = new List<Car>();
+        public List<CarDTO> cars { get; set; } = new List<CarDTO>();
+        public List<OwnerDTO> owners { get; set; } = new List<OwnerDTO>();
+        public List<CarDTO> carsOwnedByOwners { get; set; } = new List<CarDTO>();
+        public List<CarDTO> carsFree { get; set; } = new List<CarDTO>();
         public int idForUpdateCar { get; set; }
 
         // События IView
@@ -167,28 +168,28 @@ namespace WindowsFormsApp
         }
 
         // Реализация методов IView
-        public void DisplayCars(List<Car> cars)
+        public void DisplayCars(List<CarDTO> cars)
         {
             this.cars = cars;
             dataGridView_Cars.DataSource = null;
             dataGridView_Cars.DataSource = cars;
         }
 
-        public void DisplayOwners(List<Owner> owners)
+        public void DisplayOwners(List<OwnerDTO> owners)
         {
             this.owners = owners;
             dataGridView_Owners.DataSource = null;
             dataGridView_Owners.DataSource = owners;
         }
 
-        public void DisplayFreeCars(List<Car> freeCars)
+        public void DisplayFreeCars(List<CarDTO> freeCars)
         {
             this.carsFree = freeCars;
             dataGridView_CarsFree.DataSource = null;
             dataGridView_CarsFree.DataSource = freeCars;
         }
 
-        public void DisplayOwnerCars(List<Car> ownerCars)
+        public void DisplayOwnerCars(List<CarDTO> ownerCars)
         {
             this.carsOwnedByOwners = ownerCars;
             dataGridView_CarsOwnedByOwners.DataSource = null;

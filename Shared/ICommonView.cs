@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Entities;
+using DataTransferObject;
 
 namespace Shared
 {
     public interface ICommonView
     {
         // Общие методы отображения
-        void DisplayCars(List<Car> cars);
-        void DisplayOwners(List<Owner> owners);
-        void DisplayFreeCars(List<Car> freeCars);
-        void DisplayOwnerCars(List<Car> ownerCars);
+        void DisplayCars(List<CarDTO> cars);
+        void DisplayOwners(List<OwnerDTO> owners);
+        void DisplayFreeCars(List<CarDTO> freeCars);
+        void DisplayOwnerCars(List<CarDTO> ownerCars);
         void ShowMessage(string message);
         void ShowError(string error);
 
