@@ -1,0 +1,88 @@
+﻿<Window x:Class="ViewWPF.UpdateCarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ViewWPF"
+        mc:Ignorable="d"
+        Title="UpdateCarWindow" Height="443" Width="433">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Grid.Row="0" Text="ОБНОВЛЕНИЕ ИНФОРМАЦИИ ОБ АВТОМОБИЛЕ"
+                  FontSize="16" FontWeight="Bold"
+                  HorizontalAlignment="Center" Margin="0,0,0,20"
+                  TextWrapping="Wrap" TextAlignment="Center"/>
+
+        <!-- Поля ввода -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Марка -->
+            <TextBlock Grid.Row="0" Grid.Column="0" 
+                      Text="Марка" 
+                      FontSize="14"
+                      VerticalAlignment="Center" Margin="0,10"/>
+            <TextBox Grid.Row="0" Grid.Column="1" 
+                    x:Name="textBoxBrand"
+                    FontSize="14" Height="30"
+                    Margin="10,10" Text="{Binding Brand}"/>
+
+            <!-- Модель -->
+            <TextBlock Grid.Row="1" Grid.Column="0" 
+                      Text="Модель" 
+                      FontSize="14"
+                      VerticalAlignment="Center" Margin="0,10"/>
+            <TextBox Grid.Row="1" Grid.Column="1" 
+                    x:Name="textBoxModel"
+                    FontSize="14" Height="30"
+                    Margin="10,10" Text="{Binding Model}"/>
+
+            <!-- Год выпуска -->
+            <TextBlock Grid.Row="2" Grid.Column="0" 
+                      Text="Год выпуска" 
+                      FontSize="14"
+                      VerticalAlignment="Center" Margin="0,10"/>
+            <TextBox Grid.Row="2" Grid.Column="1" 
+                    x:Name="textBoxYear"
+                    FontSize="14" Height="30"
+                    Margin="10,10" Text="{Binding Year}"/>
+
+            <!-- Цена -->
+            <TextBlock Grid.Row="3" Grid.Column="0" 
+                      Text="Цена (руб.)" 
+                      FontSize="14"
+                      VerticalAlignment="Center" Margin="0,10"/>
+            <TextBox Grid.Row="3" Grid.Column="1" 
+                    x:Name="textBoxPrice"
+                    FontSize="14" Height="30"
+                    Margin="10,10" Text="{Binding Price}"/>
+        </Grid>
+
+        <!-- Кнопки -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" 
+                   HorizontalAlignment="Center" Margin="0,20">
+            <Button x:Name="buttonCancel" Content="Отмена" 
+                   Width="120" Height="45" 
+                   FontSize="12" Margin="10,0" Command="{Binding CancelCommand}"/>
+            <Button x:Name="buttonUpdate" Content="Обновить" 
+                   Width="120" Height="45" 
+                   FontSize="12" Margin="10,0" Command="{Binding UpdateCarCommand}"/>
+        </StackPanel>
+    </Grid>
+</Window>

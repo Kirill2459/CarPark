@@ -1,0 +1,307 @@
+﻿<Window x:Class="ViewWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ViewWPF"
+        mc:Ignorable="d"
+        Title="CarPark" Height="623" Width="923">
+    <TabControl Margin="0,0,0,-6">
+        <!-- Вкладка Cars -->
+        <TabItem Header="Cars">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="250"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+
+                <!-- DataGrid для автомобилей -->
+                <DataGrid x:Name="dataGridView_Cars" Grid.Row="0"
+                         AutoGenerateColumns="False"
+                         CanUserAddRows="False"
+                         Margin="5"
+                         ItemsSource="{Binding cars}"
+                         SelectedItem="{Binding SelectedCar}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="*"/>
+                        <DataGridTextColumn Header="Brand" Binding="{Binding Brand}" Width="*"/>
+                        <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*"/>
+                        <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="*"/>
+                        <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="*"/>
+                        <DataGridTextColumn Header="IdOwner" Binding="{Binding IdOwner}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Левая панель - Просмотр автомобилей -->
+                    <GroupBox Grid.Column="0" Header="Просмотр автомобилей" Margin="5">
+                        <StackPanel Margin="5">
+                            <Button x:Name="button1" Content="Показать все машины" 
+                                   Height="35" Margin="0,5" Command="{Binding ShowAllCarCommand}"/>
+
+                            <Grid Margin="0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Год для сортировки" 
+                                          VerticalAlignment="Center" Margin="5,0"/>
+                                <TextBox x:Name="textBox8" Grid.Column="1" 
+                                        Height="25" Margin="5,0" Text="{Binding YearForSort}"/>
+                            </Grid>
+
+                            <Button x:Name="button2" Content="Найти машины" 
+                                   Height="35" Margin="0,5" Command="{Binding SortCarForYearCommand}" 
+                                    CommandParameter="{Binding YearForSort}"/>
+
+                            <GroupBox Header="Сортировка по бренду автомобиля" Margin="0,10">
+                                <StackPanel Margin="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Укажите автомобильный бренд:" 
+                                                  VerticalAlignment="Center" Margin="5,0"/>
+                                        <TextBox x:Name="textBox1" Grid.Column="1" 
+                                                Height="25" Margin="5,0" Text="{Binding BrandForSort}"/>
+                                    </Grid>
+                                    <Button x:Name="button3" Content="Сортировать по бренду" 
+                                           Height="35" Margin="0,5" Command="{Binding SortCarForBrandCommand}" 
+                                           CommandParameter="{Binding BrandForSort}"/>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Правая панель - Управление автомобилями -->
+                    <StackPanel Grid.Column="1" Margin="5">
+                        <!-- Удаление автомобиля -->
+                        <GroupBox Header="Удаление автомобиля" Margin="0,5">
+                            <StackPanel Margin="5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Id автомобиля для удаления" 
+                                              VerticalAlignment="Center" Margin="5,0"/>
+                                    <TextBox x:Name="textBox2" Grid.Column="1" 
+                                            Height="25" Margin="5,0" Text="{Binding IdCarForDelete}"/>
+                                </Grid>
+                                <Button x:Name="button4" Content="Удалить автомобиль" 
+                                       Height="35" Margin="0,5" Command="{Binding DeleteCarCommand}" 
+                                       CommandParameter="{Binding IdCarForDelete}"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Обновление информации -->
+                        <GroupBox Header="Обновление информации об автомобиле" Margin="0,5">
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Id автомобиля для обновления информации" 
+                                          Margin="0,5"/>
+                                <TextBox x:Name="textBox3" Height="25" Margin="0,5" Text="{Binding IdCarForUpdate}"/>
+                                <Button x:Name="button5" Content="Обновить информацию об автомобиле" 
+                                       Height="35" Margin="0,5" Command="{Binding SwitchToUpdateCarViewCommand}" 
+                                       CommandParameter="{Binding IdCarForUpdate}"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Нижние кнопки -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="button6" Grid.Column="0" Content="Узнать стоимость текущих машин" 
+                           Height="35" Margin="5" Command="{Binding CostAllCarsCommand}"/>
+                    <Button x:Name="button7" Grid.Column="1" Content="Добавить автомобиль в автопарк" 
+                           Height="35" Margin="5" Command="{Binding SwitchToAddCarViewCommand}"/>
+                </Grid>
+            </Grid>
+        </TabItem>
+
+        <!-- Вкладка Owners -->
+        <TabItem Header="Owners">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="180"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="130"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="140"/>
+                </Grid.RowDefinitions>
+
+                <!-- Заголовок и кнопки для владельцев -->
+                <TextBlock Grid.Row="0" Text="ВЛАДЕЛЬЦЫ" FontSize="14" FontWeight="Bold" 
+                          Margin="5"/>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- DataGrid владельцев -->
+                    <DataGrid x:Name="dataGridView_Owners" Grid.Column="0"
+                             AutoGenerateColumns="False"
+                             CanUserAddRows="False"
+                             Margin="5"
+                             ItemsSource="{Binding owners}"
+                             SelectedItem="{Binding SelectedOwner}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="*"/>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="*"/>
+                            <DataGridTextColumn Header="ExperienceYear" Binding="{Binding ExperienceYear}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Панель управления владельцами -->
+                    <StackPanel Grid.Column="1" Width="240" Margin="10,5">
+                        <Button x:Name="button8" Content="Добавить владельца" 
+                               Height="45" Margin="0,5" FontSize="12" Command="{Binding SwitchToAddOwnerViewCommand}"/>
+
+                        <GroupBox Header="Удаление владельца" Margin="0,10">
+                            <StackPanel Margin="5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Id владельца" 
+                                              VerticalAlignment="Center" Margin="5,0"/>
+                                    <TextBox x:Name="textBox4" Grid.Column="1" 
+                                            Height="25" Margin="5,0" Text="{Binding IdOwnerForDelete}"/>
+                                </Grid>
+                                <Button x:Name="button9" Content="Удалить владельца" 
+                                       Height="35" Margin="0,5" Command="{Binding DeleteOwnerCommand}" 
+                                       CommandParameter="{Binding IdOwnerForDelete}"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Автомобили владельца -->
+                <TextBlock Grid.Row="2" Text="АВТОМОБИЛИ ВЛАДЕЛЬЦА" 
+                          FontSize="14" FontWeight="Bold" Margin="5"/>
+
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- DataGrid автомобилей владельца -->
+                    <DataGrid x:Name="dataGridView_CarsOwnedByOwners" Grid.Column="0"
+                             AutoGenerateColumns="False"
+                             CanUserAddRows="False"
+                             Margin="5"
+                             ItemsSource="{Binding ownerCars}"
+                             SelectedItem="{Binding SelectedCar}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="*"/>
+                            <DataGridTextColumn Header="Brand" Binding="{Binding Brand}" Width="*"/>
+                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*"/>
+                            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="*"/>
+                            <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="*"/>
+                            <DataGridTextColumn Header="IdOwner" Binding="{Binding IdOwner}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Просмотр машин владельца -->
+                    <GroupBox Grid.Column="1" Header="Просмотр машин владельца" 
+                             Width="300" Margin="10,5">
+                        <StackPanel Margin="5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Id владельца" 
+                                          VerticalAlignment="Center" Margin="5,0"/>
+                                <TextBox x:Name="textBox5" Grid.Column="1" 
+                                        Height="25" Margin="5,0" Text="{Binding IdOwnerForShow}"/>
+                            </Grid>
+                            <Button x:Name="button10" Content="Показать машины владельца" 
+                                   Height="35" Margin="0,5" Command="{Binding ShowOwnerCarsCommand}" 
+                                   CommandParameter="{Binding IdOwnerForShow}"/>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+
+                <!-- Свободные автомобили -->
+                <TextBlock Grid.Row="4" Text="СВОБОДНЫЕ АВТОМОБИЛИ" 
+                          FontSize="14" FontWeight="Bold" Margin="5"/>
+
+                <Grid Grid.Row="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- DataGrid свободных автомобилей -->
+                    <DataGrid x:Name="dataGridView_CarsFree" Grid.Column="0"
+                             AutoGenerateColumns="False"
+                             CanUserAddRows="False"
+                             Margin="5"
+                             ItemsSource="{Binding freeCars}"
+                             SelectedItem="{Binding SelectedCar}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="*"/>
+                            <DataGridTextColumn Header="Brand" Binding="{Binding Brand}" Width="*"/>
+                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*"/>
+                            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="*"/>
+                            <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="*"/>
+                            <DataGridTextColumn Header="IdOwner" Binding="{Binding IdOwner}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Добавление машины владельцу -->
+                    <GroupBox Grid.Column="1" Header="Добавление машины владельцу" 
+                             Width="300" Margin="10,5">
+                        <StackPanel Margin="5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Id владельца" 
+                                              VerticalAlignment="Center" Margin="5,0"/>
+                                    <TextBox x:Name="textBox6" Grid.Column="1" 
+                                            Height="25" Margin="5,0" Text="{Binding IdOwnerForAddCar}"/>
+                                </Grid>
+                                <Grid Grid.Row="1" Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Id машины" 
+                                              VerticalAlignment="Center" Margin="5,0"/>
+                                    <TextBox x:Name="textBox7" Grid.Column="1" 
+                                            Height="25" Margin="5,0" Text="{Binding IdCarForAddForOwner}"/>
+                                </Grid>
+                            </Grid>
+                            <Button x:Name="button11" Content="Добавить машину владельцу" Height="35" Margin="0,5"
+                                    Command="{Binding AddCarForOwnerCommand}"/>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>

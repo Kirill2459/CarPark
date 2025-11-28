@@ -4,6 +4,7 @@ using Model;
 using Ninject;
 using Shared;
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 using WindowsFormsApp;
 
@@ -19,7 +20,7 @@ namespace Presenter
             Console.WriteLine("Выберите тип интерфейса:");
             Console.WriteLine("1 - Windows Forms (графический)");
             Console.WriteLine("2 - Console (консольный)");
-            
+
 
             var choice = Console.ReadLine();
 

@@ -1,22 +1,20 @@
-﻿using System;
+﻿using DataTransferObject;
+using Model;
+using Model.Entities;
+using Shared;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-namespace DataTransferObject
+namespace Presenter.ViewModel.ViewModels
 {
-    public class CarDTO : INotifyPropertyChanged
+    public class UpdateCarVM : ViewModel, INotifyPropertyChanged
     {
-        //public int Id { get; set; }
-        //public string Brand { get; set; }
-        //public string Model { get; set; }
-        //public int Year { get; set; }
-        //public decimal Price { get; set; }
-        //public int? IdOwner { get; set; }
-
         private int _id;
         public int Id
         {
@@ -30,7 +28,7 @@ namespace DataTransferObject
                 }
             }
         }
-        
+
         private string _brand;
         public string Brand
         {
@@ -44,7 +42,7 @@ namespace DataTransferObject
                 }
             }
         }
-        
+
         private string _model;
         public string Model
         {
@@ -58,7 +56,7 @@ namespace DataTransferObject
                 }
             }
         }
-        
+
         private int _year;
         public int Year
         {
@@ -72,7 +70,7 @@ namespace DataTransferObject
                 }
             }
         }
-        
+
         private decimal _price;
         public decimal Price
         {
@@ -86,7 +84,7 @@ namespace DataTransferObject
                 }
             }
         }
-        
+
         private int? _idOwner;
         public int? IdOwner
         {
@@ -101,44 +99,49 @@ namespace DataTransferObject
             }
         }
 
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
+        private readonly ILogicService _logic;
+        public UpdateCarVM(ILogicService logic, CarDTO car)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Id = car.Id;
+            Price = car.Price;
+            Brand = car.Brand;
+            Model = car.Model;
+            Year = car.Year;
+            IdOwner = car.IdOwner;
+
+            _logic = logic;
+
+            UpdateCarCommand = new RelayCommand(UpdateCar);
+            CancelCommand = new RelayCommand(Cancel);
+        }
+
+        public RelayCommand UpdateCarCommand { get; set; }
+        public RelayCommand CancelCommand { get; set; }
+
+        private void UpdateCar()
+        {
+            Car newCar = new Car()
+            {
+                Brand = Brand,
+                Model = Model,
+                Year = Year,
+                Price = Price
+            };
+
+            newCar.Id = Id;
+            newCar.IdOwner = IdOwner;
+
+            _logic.Update(newCar);
+            MessageBox.Show($"Автомобиль изменен: {newCar.Brand} {newCar.Model}, {newCar.Year} года, - {newCar.Price} руб");
+
+            Cancel();
         }
 
 
-
-        /// <summary>
-        /// Конструктор для создания
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <param name="brand">брэнд</param>
-        /// <param name="model">модель</param>
-        /// <param name="year">год выпуска</param>
-        /// <param name="price">цена</param>
-        /// <param name="idOwner">id владельца</param>
-        public CarDTO(int id, string brand, string model, int year, decimal price, int? idOwner)
+        public event Action CloseEvent;
+        private void Cancel()
         {
-            Id = id;
-            Brand = brand;
-            Model = model;
-            Year = year;
-            Price = price;
-            IdOwner = idOwner;
+            CloseEvent.Invoke();
         }
-
-        /// <summary>
-        /// Конструктор для поиска по Id
-        /// </summary>
-        /// <param name="id"></param>
-        public CarDTO(int id)
-        {
-            Id = id;
-        }
-
-        public CarDTO() { }
     }
 }

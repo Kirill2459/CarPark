@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presenter", "Presenter\Pres
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTransferObject", "DataTransferObject\DataTransferObject.csproj", "{BCA60A81-3815-467A-B113-490FE78E96A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewWPF", "ViewWPF\ViewWPF.csproj", "{60BAEDBF-DAEE-4F26-B784-81922D77AE1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{BCA60A81-3815-467A-B113-490FE78E96A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCA60A81-3815-467A-B113-490FE78E96A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCA60A81-3815-467A-B113-490FE78E96A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60BAEDBF-DAEE-4F26-B784-81922D77AE1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60BAEDBF-DAEE-4F26-B784-81922D77AE1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60BAEDBF-DAEE-4F26-B784-81922D77AE1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60BAEDBF-DAEE-4F26-B784-81922D77AE1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

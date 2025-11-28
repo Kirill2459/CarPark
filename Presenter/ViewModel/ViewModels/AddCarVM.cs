@@ -1,22 +1,18 @@
-﻿using System;
+﻿using DataTransferObject;
+using Model;
+using Model.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using System.Windows.Forms;
 
-namespace DataTransferObject
+namespace Presenter.ViewModel.ViewModels
 {
-    public class CarDTO : INotifyPropertyChanged
+    public class AddCarVM : ViewModel, INotifyPropertyChanged
     {
-        //public int Id { get; set; }
-        //public string Brand { get; set; }
-        //public string Model { get; set; }
-        //public int Year { get; set; }
-        //public decimal Price { get; set; }
-        //public int? IdOwner { get; set; }
-
         private int _id;
         public int Id
         {
@@ -30,7 +26,6 @@ namespace DataTransferObject
                 }
             }
         }
-        
         private string _brand;
         public string Brand
         {
@@ -44,7 +39,6 @@ namespace DataTransferObject
                 }
             }
         }
-        
         private string _model;
         public string Model
         {
@@ -58,7 +52,6 @@ namespace DataTransferObject
                 }
             }
         }
-        
         private int _year;
         public int Year
         {
@@ -72,7 +65,6 @@ namespace DataTransferObject
                 }
             }
         }
-        
         private decimal _price;
         public decimal Price
         {
@@ -86,7 +78,6 @@ namespace DataTransferObject
                 }
             }
         }
-        
         private int? _idOwner;
         public int? IdOwner
         {
@@ -102,43 +93,38 @@ namespace DataTransferObject
         }
 
 
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
+        private readonly ILogicService _logic;
+        public AddCarVM(ILogicService logic)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            _logic = logic;
+
+            AddCarCommand = new RelayCommand(AddCar);
+            CancelCommand = new RelayCommand(Cancel);
         }
 
+        public RelayCommand AddCarCommand { get; set; }
+        public RelayCommand CancelCommand { get; set; }
 
-
-        /// <summary>
-        /// Конструктор для создания
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <param name="brand">брэнд</param>
-        /// <param name="model">модель</param>
-        /// <param name="year">год выпуска</param>
-        /// <param name="price">цена</param>
-        /// <param name="idOwner">id владельца</param>
-        public CarDTO(int id, string brand, string model, int year, decimal price, int? idOwner)
+        private void AddCar()
         {
-            Id = id;
-            Brand = brand;
-            Model = model;
-            Year = year;
-            Price = price;
-            IdOwner = idOwner;
+            Car car = new Car()
+            {
+                Brand = Brand,
+                Model = Model,
+                Year = Year,
+                Price = Price
+            };
+
+            _logic.Add(car);
+            MessageBox.Show($"Добавлена: {car.Brand} {car.Model}, {car.Year} года, - {car.Price} руб");
+
+            Cancel();
         }
 
-        /// <summary>
-        /// Конструктор для поиска по Id
-        /// </summary>
-        /// <param name="id"></param>
-        public CarDTO(int id)
+        public event Action CloseEvent;
+        private void Cancel()
         {
-            Id = id;
+            CloseEvent.Invoke();
         }
-
-        public CarDTO() { }
     }
 }

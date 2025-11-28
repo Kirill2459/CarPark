@@ -1,21 +1,18 @@
-﻿using System;
+﻿using Model;
+using Model.Entities;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace DataTransferObject
+namespace Presenter.ViewModel.ViewModels
 {
-    public class OwnerDTO : INotifyPropertyChanged
+    public class AddOwnerVM : ViewModel, INotifyPropertyChanged
     {
-        //public int Id { get; set; }
-        //public string Name { get; set; }
-        //public int Year { get; set; }
-        //public int ExperienceYear { get; set; }
-        //public List<int> IdCarsOwner { get; set; } = new List<int>();
-
         private int _id;
         public int Id
         {
@@ -29,7 +26,6 @@ namespace DataTransferObject
                 }
             }
         }
-
         private string _name;
         public string Name
         {
@@ -43,7 +39,6 @@ namespace DataTransferObject
                 }
             }
         }
-        
         private int _year;
         public int Year
         {
@@ -57,7 +52,6 @@ namespace DataTransferObject
                 }
             }
         }
-
         private int _experienceYear;
         public int ExperienceYear
         {
@@ -71,7 +65,6 @@ namespace DataTransferObject
                 }
             }
         }
-
         private List<int> _idCarsOwner = new List<int>();
         public List<int> IdCarsOwner
         {
@@ -86,39 +79,38 @@ namespace DataTransferObject
             }
         }
 
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
+        private readonly ILogicService _logic;
+        public AddOwnerVM(ILogicService logic)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            _logic = logic;
+
+            AddOwnerCommand = new RelayCommand(AddOwner);
+            CancelCommand = new RelayCommand(Cancel);
         }
 
-        /// <summary>
-        /// Конструктор для создания
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <param name="name">имя</param>
-        /// <param name="year">год рождения</param>
-        /// <param name="experienceYear">стаж</param>
-        /// <param name="idCarsOwner">список id машин владельца</param>
-        public OwnerDTO(int id, string name, int year, int experienceYear, List<int> idCarsOwner)
+        public RelayCommand AddOwnerCommand { get; set; }
+        public RelayCommand CancelCommand { get; set; }
+
+        private void AddOwner()
         {
-            Id = id;
-            Name = name;
-            Year = year;
-            ExperienceYear = experienceYear;
-            IdCarsOwner = idCarsOwner;
+            Owner owner = new Owner()
+            {
+                Name = Name,
+                Year = Year,
+                ExperienceYear = ExperienceYear
+            };
+
+            _logic.Add(owner);
+            MessageBox.Show($"Добавлен: {owner.Name}, возраст:{owner.Year}, стаж:{owner.ExperienceYear}");
+
+            Cancel();
         }
 
-        /// <summary>
-        /// Конструктор для поиска по Id
-        /// </summary>
-        /// <param name="id">id</param>
-        public OwnerDTO(int id)
-        {
-            Id = id;
-        }
 
-        public OwnerDTO() { }
+        public event Action CloseEvent;
+        private void Cancel()
+        {
+            CloseEvent.Invoke();
+        }
     }
 }
