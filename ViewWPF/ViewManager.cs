@@ -17,25 +17,28 @@ namespace ViewWPF
         /// </summary>
         private static MainVM MainVM { get; set; }
 
-        /// <summary>
-        /// ViewModel для окна с добавлением машины
-        /// </summary>
-        private static AddCarVM AddCarVM { get; set; }
+        ///// <summary>
+        ///// ViewModel для окна с добавлением машины
+        ///// </summary>
+        //private static AddCarVM AddCarVM { get; set; }
 
-        /// <summary>
-        /// ViewModel для окна с добавлением владельцев
-        /// </summary>
-        private static AddOwnerVM AddOwnerVM { get; set; }
+        ///// <summary>
+        ///// ViewModel для окна с добавлением владельцев
+        ///// </summary>
+        //private static AddOwnerVM AddOwnerVM { get; set; }
 
-        /// <summary>
-        /// ViewModel для окна с изменением машины
-        /// </summary>
-        private static UpdateCarVM UpdateCarVM { get; set; }
+        ///// <summary>
+        ///// ViewModel для окна с изменением машины
+        ///// </summary>
+        //private static UpdateCarVM UpdateCarVM { get; set; }
 
         /// <summary>
         /// ViewModelManager для организации работы нескольких ViewModel многооконного приложения
         /// </summary>
         private static VMManager VMManager { get; set; }
+
+        
+        private static Dictionary<ViewModel, Window> dictWindow = new Dictionary<ViewModel, Window>();
 
 
 
@@ -76,7 +79,11 @@ namespace ViewWPF
 
             MainVM = mainVM;
 
-            mainWindow.Show();
+            dictWindow.Add(mainVM, mainWindow);
+
+            dictWindow[mainVM].ShowDialog();
+
+            //mainWindow.Show();
         }
 
         /// <summary>
@@ -86,7 +93,7 @@ namespace ViewWPF
         private static void CreateUpdateCarView(UpdateCarVM updateCarVN)
         {
             var updateCarWindow = new UpdateCarWindow();
-            UpdateCarVM = updateCarVN;
+            //UpdateCarVM = updateCarVN;
             updateCarWindow.DataContext = updateCarVN;
 
             updateCarVN.CloseEvent += () => CloseWindow(updateCarWindow);
@@ -94,7 +101,11 @@ namespace ViewWPF
             //обновление MainVM
             updateCarVN.CloseEvent += MainVM.RefreshAllData;
 
-            updateCarWindow.ShowDialog();
+
+            dictWindow.Add(updateCarVN, updateCarWindow);
+
+            dictWindow[updateCarVN].ShowDialog();
+            //updateCarWindow.ShowDialog();
         }
 
         /// <summary>
@@ -104,7 +115,7 @@ namespace ViewWPF
         private static void CreateAddCarView(AddCarVM addCarVM)
         {
             var addCarWindow = new AddCarWindow();
-            AddCarVM = addCarVM;
+            //AddCarVM = addCarVM;
             addCarWindow.DataContext = addCarVM;
 
             addCarVM.CloseEvent += () => CloseWindow(addCarWindow);
@@ -112,7 +123,11 @@ namespace ViewWPF
             //обновление MainVM
             addCarVM.CloseEvent += MainVM.RefreshAllData;
 
-            addCarWindow.ShowDialog();
+
+            dictWindow.Add(addCarVM, addCarWindow);
+
+            dictWindow[addCarVM].ShowDialog();
+            //addCarWindow.ShowDialog();
         }
 
         /// <summary>
@@ -122,7 +137,7 @@ namespace ViewWPF
         private static void CreateAddOwnerView(AddOwnerVM addOwnerVM)
         {
             var addOwnerWindow = new AddOwnerWindow();
-            AddOwnerVM = addOwnerVM;
+            //AddOwnerVM = addOwnerVM;
             addOwnerWindow.DataContext = addOwnerVM;
 
             addOwnerVM.CloseEvent += () => CloseWindow(addOwnerWindow);
@@ -130,7 +145,11 @@ namespace ViewWPF
             //обновление MainVM
             addOwnerVM.CloseEvent += MainVM.RefreshAllData;
 
-            addOwnerWindow.ShowDialog();
+
+            dictWindow.Add(addOwnerVM, addOwnerWindow);
+
+            dictWindow[addOwnerVM].ShowDialog();
+            //addOwnerWindow.ShowDialog();
         }
 
         /// <summary>
